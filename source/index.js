@@ -1,5 +1,5 @@
 // Scrips imports
-
+import "./main_renderer"
 
 // Styles imports
 import './styles/index.scss'
