@@ -1,4 +1,7 @@
+// Scrips imports
+
+
+// Styles imports
 import './styles/index.scss'
 
-console.log("Je suis un test!")
-console.log("et toi?")
+// No code goes here, only imports
