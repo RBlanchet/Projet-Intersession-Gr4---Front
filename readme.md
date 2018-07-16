@@ -8,3 +8,20 @@
 
 - Then yarn : ``` brew install yarn ```
 
+- ``` yarn install ```
+
+## Compiling statics
+
+For developpement: 
+- ``` yarn dev ``` (the file watcher is included)
+
+For production: 
+-  ``` yarn build ```
+
+## Launching the app
+
+- ``` yarn start ```
+
+## Production build
+
+TODO
