@@ -18,6 +18,10 @@ For developpement:
 For production: 
 -  ``` yarn build ```
 
+### Code location
+
+The code for static is in /source directory, compiled code by webpack goes in /dist.
+
 ## Launching the app
 
 - ``` yarn start ```
