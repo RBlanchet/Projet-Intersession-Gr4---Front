@@ -26,6 +26,9 @@ The code for static is in /source directory, compiled code by webpack goes in /d
 
 - ``` yarn start ```
 
+- To gain access to the react dev tools, paste this in the dev console: 
+``` require('electron-react-devtools').install() ```
+
 ## Production build
 
 TODO
