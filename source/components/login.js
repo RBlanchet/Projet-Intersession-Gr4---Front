@@ -8,43 +8,43 @@ class Login extends React.Component {
     constructor(props) {
         super(props)
         apiHelpers.apiGet("login-generate-token").then(token => {
-            this.props.values.csrf_token = token.data
+            this.props.values._csrf_token = token.data
         })
     }
 
     render() {
         return (
             <form onSubmit={this.props.handleSubmit}>
-                <label htmlFor="email" style={{display: 'block'}}>
+                <label htmlFor="_username" style={{display: 'block'}}>
                     Email
                 </label>
                 <input
-                    id="email"
+                    id="_username"
                     placeholder="jean.dupont@example.com"
                     type="text"
-                    value={this.props.values.email}
+                    value={this.props.values._username}
                     onChange={this.props.handleChange}
                     onBlur={this.props.handleBlur}
-                    className={this.props.errors.email && this.props.touched.email ? 'text-input error' : 'text-input'}
+                    className={this.props.errors._username && this.props.touched._username ? 'text-input error' : 'text-input'}
                 />
-                {this.props.errors.email &&
-                this.props.touched.email && <div className="input-feedback">{this.props.errors.email}</div>}
+                {this.props.errors._username &&
+                this.props.touched._username && <div className="input-feedback">{this.props.errors._username}</div>}
 
 
-                <label htmlFor="password" style={{display: 'block'}}>
+                <label htmlFor="_password" style={{display: 'block'}}>
                     Mot de passe
                 </label>
                 <input
-                    id="password"
-                    placeholder="Mot de passe"
+                    id="_password"
+                    placeholder="********"
                     type="password"
-                    value={this.props.values.password}
+                    value={this.props.values._password}
                     onChange={this.props.handleChange}
                     onBlur={this.props.handleBlur}
-                    className={this.props.errors.password && this.props.touched.password ? 'text-input error' : 'text-input'}
+                    className={this.props.errors._password && this.props.touched._password ? 'text-input error' : 'text-input'}
                 />
-                {this.props.errors.password &&
-                this.props.touched.password && <div className="input-feedback">{this.props.errors.password}</div>}
+                {this.props.errors._password &&
+                this.props.touched._password && <div className="input-feedback">{this.props.errors._password}</div>}
 
                 <label htmlFor="_remember_me" style={{display: 'block'}}>
                     Se souvenir de moi
@@ -62,25 +62,25 @@ class Login extends React.Component {
                     Go!
                 </button>
 
-                <Link to="/reset-password">Forgot your password?</Link>
+                <Link to="/reset-password">Mot de passe oublié?</Link>
             </form>
         )
     }
 }
 
 const LoginForm = withFormik({
-    mapPropsToValues: () => ({email: '', password: ''}),
+    mapPropsToValues: () => ({_username: '', _password: ''}),
     validationSchema: object().shape({
-        email: string()
+        _username: string()
             .email('Adresse email invalide!')
             .required('Adresse email invalide!'),
-        password: string().required("Mot de passe requis!")
+        _password: string().required("Mot de passe requis!")
     }),
     handleSubmit: (values, {setSubmitting}) => {
-        debugger
-        alert(JSON.stringify(values, null, 2))
-        setSubmitting(false)
-        // TODO: Actually log people in
+        apiHelpers.apiPost("login_check", values).then(response => {
+            debugger
+            setSubmitting(false)
+        })
     },
     displayName: 'LoginForm', // helps with React DevTools
 })(Login)
