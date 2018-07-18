@@ -9,9 +9,10 @@ const dev_mode = (process.env.NODE_ENV !== 'production')
 
 module.exports = (options) => ({
     ...options,
-    entry: {
-        index: path.join(conf.SRC, 'index.js'),
-    },
+    entry: [
+
+        './source/index.js',
+    ],
     /// Add hot reloading in development
     output: Object.assign({
         path: conf.DIST,

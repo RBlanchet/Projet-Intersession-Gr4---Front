@@ -2,57 +2,70 @@ import React from "react"
 import {withFormik} from 'formik'
 import {string, object} from 'yup'
 import {Link} from "react-router-dom"
+import apiHelpers from "../apiHelpers"
 
-const Login = props => {
-    const {
-        values,
-        touched,
-        errors,
-        isSubmitting,
-        handleChange,
-        handleBlur,
-        handleSubmit,
-    } = props
-    return (
-        <form onSubmit={handleSubmit}>
-            <label htmlFor="email" style={{display: 'block'}}>
-                Email
-            </label>
-            <input
-                id="email"
-                placeholder="jean.dupont@example.com"
-                type="text"
-                value={values.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={errors.email && touched.email ? 'text-input error' : 'text-input'}
-            />
-            {errors.email &&
-            touched.email && <div className="input-feedback">{errors.email}</div>}
+class Login extends React.Component {
+    constructor(props) {
+        super(props)
+        apiHelpers.apiGet("login-generate-token").then(token => {
+            this.props.values.csrf_token = token.data
+        })
+    }
+
+    render() {
+        return (
+            <form onSubmit={this.props.handleSubmit}>
+                <label htmlFor="email" style={{display: 'block'}}>
+                    Email
+                </label>
+                <input
+                    id="email"
+                    placeholder="jean.dupont@example.com"
+                    type="text"
+                    value={this.props.values.email}
+                    onChange={this.props.handleChange}
+                    onBlur={this.props.handleBlur}
+                    className={this.props.errors.email && this.props.touched.email ? 'text-input error' : 'text-input'}
+                />
+                {this.props.errors.email &&
+                this.props.touched.email && <div className="input-feedback">{this.props.errors.email}</div>}
 
 
-            <label htmlFor="password" style={{display: 'block'}}>
-                Mot de passe
-            </label>
-            <input
-                id="password"
-                placeholder="Mot de passe"
-                type="password"
-                value={values.password}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={errors.password && touched.password ? 'text-input error' : 'text-input'}
-            />
-            {errors.password &&
-            touched.password && <div className="input-feedback">{errors.password}</div>}
+                <label htmlFor="password" style={{display: 'block'}}>
+                    Mot de passe
+                </label>
+                <input
+                    id="password"
+                    placeholder="Mot de passe"
+                    type="password"
+                    value={this.props.values.password}
+                    onChange={this.props.handleChange}
+                    onBlur={this.props.handleBlur}
+                    className={this.props.errors.password && this.props.touched.password ? 'text-input error' : 'text-input'}
+                />
+                {this.props.errors.password &&
+                this.props.touched.password && <div className="input-feedback">{this.props.errors.password}</div>}
 
-            <button type="submit" disabled={isSubmitting}>
-                Go!
-            </button>
+                <label htmlFor="_remember_me" style={{display: 'block'}}>
+                    Se souvenir de moi
+                </label>
+                <input
+                    id="_remember_me"
+                    type="checkbox"
+                    value={"on"}
+                    onChange={this.props.handleChange}
+                    onBlur={this.props.handleBlur}
+                    className={'checkbox-input'}
+                />
 
-            <Link to="/reset-password">Forgot your password?</Link>
-        </form>
-    )
+                <button type="submit" disabled={this.props.isSubmitting}>
+                    Go!
+                </button>
+
+                <Link to="/reset-password">Forgot your password?</Link>
+            </form>
+        )
+    }
 }
 
 const LoginForm = withFormik({
@@ -64,11 +77,10 @@ const LoginForm = withFormik({
         password: string().required("Mot de passe requis!")
     }),
     handleSubmit: (values, {setSubmitting}) => {
-        setTimeout(() => {
-            alert(JSON.stringify(values, null, 2))
-            setSubmitting(false)
-            // TODO: Actually log people in
-        }, 1000)
+        debugger
+        alert(JSON.stringify(values, null, 2))
+        setSubmitting(false)
+        // TODO: Actually log people in
     },
     displayName: 'LoginForm', // helps with React DevTools
 })(Login)
