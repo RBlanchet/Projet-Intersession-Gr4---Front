@@ -21,7 +21,8 @@ function logoutUser() {
 
 function getUserInfo() {
     const cacheAge = (new Date().getTime()) - parseInt(storage.getItem("userSet"))
-    if (cacheAge >= 3600) {
+    // 1 minute: 60 * 1000ms
+    if (cacheAge >= 60 * 60 * 1000) {
         reloadUserInfo()
     }
     const user = JSON.parse(storage.getItem("user"))
@@ -42,9 +43,9 @@ function reloadUserInfo() {
         return false
     }
     const userInfo = JSON.parse(response.responseText)
-    const user = userInfo.users.byId[userInfo.users.allId[0]]
+    const user = userInfo[Object.keys(userInfo)[0]]
+
     storage.setItem("user", JSON.stringify(user))
-    storage.setItem("userRoles", JSON.stringify(userInfo.protectedRoles))
     storage.setItem("userSet", String(new Date().getTime()))
 }
 

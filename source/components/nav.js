@@ -26,6 +26,9 @@ class Nav extends React.Component {
                         <Link to="/dashboard">Tableau de bord</Link>
                     </li>
                     <li>
+                        <Link to="/users">Gestion des utilisateurs</Link>
+                    </li>
+                    <li>
                         <button onClick={logout}>Se déconnecter</button>
                     </li>
                 </ul>
