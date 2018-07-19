@@ -17,7 +17,7 @@ class Login extends React.Component {
     render() {
         if (connectionHelpers.isAuthenticated()) {
             return (
-                <Redirect to={"/about"}/>
+                <Redirect to={"/dashboard"}/>
             )
         } else {
             return (
@@ -88,11 +88,11 @@ const LoginForm = withFormik({
         apiHelpers.apiPost("login_check", values).then(() => {
             setSubmitting(false)
             if (connectionHelpers.loginUser()) {
-                // TODO: redirect to dashboard
-                window.location += "about"
+                window.location += "dashboard"
             } else {
                 // TODO: error feedback
                 console.log("connection failed")
+                // this.errors.global = "Le couple email / mot de passe ne corresponds pas"
             }
         })
     },

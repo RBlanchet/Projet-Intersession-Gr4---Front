@@ -19,11 +19,11 @@ class Nav extends React.Component {
 
             return (
                 <ul>
+                    {/*<li>*/}
+                        {/*<Link to="/">Connexion</Link>*/}
+                    {/*</li>*/}
                     <li>
-                        <Link to="/">Login</Link>
-                    </li>
-                    <li>
-                        <Link to="/about">About</Link>
+                        <Link to="/dashboard">Tableau de bord</Link>
                     </li>
                     <li>
                         <button onClick={logout}>Se déconnecter</button>

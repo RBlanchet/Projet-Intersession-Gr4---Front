@@ -1,9 +1,10 @@
 import * as ReactDOM from 'react-dom'
 import React from "react"
-import {HashRouter as Router, Route} from "react-router-dom"
+import {HashRouter as Router, Route, Redirect} from "react-router-dom"
 
 import Nav from "./components/nav"
 import Login from "./components/login"
+import connectionHelpers from "./connectionHelpers"
 
 const Main = () => (
     <Router>
@@ -15,16 +16,18 @@ const Main = () => (
             <Route exact path="/" component={Login}/>
             <Route path="/reset-password" component={Login}/>
 
-            <Route path="/about" component={About}/>
+            <Route path="/"/>
+
+            <Route path="/dashboard" component={Dashboard}/>
         </div>
     </Router>
 )
 // onEnter={requireAuth}
 
 
-const About = () => (
+const Dashboard = () => (
     <div>
-        <h2>About</h2>
+        <h2>Tableau de bord</h2>
     </div>
 )
 
