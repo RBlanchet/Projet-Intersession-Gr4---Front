@@ -3,6 +3,7 @@ import React from "react"
 import {HashRouter as Router, Route} from "react-router-dom"
 
 import Nav from "./components/nav"
+import Login from "./components/login"
 
 const Main = () => (
     <Router>
@@ -11,17 +12,14 @@ const Main = () => (
 
             <hr/>
 
-            <Route exact path="/" component={Home}/>
+            <Route exact path="/" component={Login}/>
+            <Route path="/reset-password" component={Login}/>
+
             <Route path="/about" component={About}/>
         </div>
     </Router>
 )
-
-const Home = () => (
-    <div>
-        <h2>Home</h2>
-    </div>
-)
+// onEnter={requireAuth}
 
 
 const About = () => (

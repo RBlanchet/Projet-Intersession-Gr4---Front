@@ -1,6 +1,6 @@
 const path = require('path')
 
-conf = {
+const conf = {
     SRC_DIR: 'source',
     DIST_DIR: 'dist',
     ASSETS_DIR: 'assets',

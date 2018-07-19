@@ -5,14 +5,14 @@
       {
         "targets": {
           "browsers": [
-            ">1% in FR"
+            "last 3 Electron versions"
           ]
-        },
-        "modules": false
+        }
       }
     ],
     "react",
-    "flow"
+    "flow",
+    "stage-0"
   ],
   "plugins": [
     "transform-object-rest-spread",
@@ -23,6 +23,8 @@
       }
     ],
     "react-flow-props-to-prop-types",
-    "react-hot-loader/babel"
+    "transform-regenerator",
+    "transform-runtime",
+    "transform-async-to-generator"
   ]
 }

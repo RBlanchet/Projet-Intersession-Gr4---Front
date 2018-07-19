@@ -1,67 +1,101 @@
-import { withFormik } from 'formik';
-import Yup from 'yup';
+import React from "react"
+import {withFormik} from 'formik'
+import {string, object} from 'yup'
+import {Link} from "react-router-dom"
+import apiHelpers from "../apiHelpers"
+import connectionHelpers from "../connectionHelpers"
 
-// Our inner form component. Will be wrapped with Formik({..})
-const Login = props => {
-    const {
-        values,
-        touched,
-        errors,
-        dirty,
-        isSubmitting,
-        handleChange,
-        handleBlur,
-        handleSubmit,
-        handleReset,
-    } = props;
-    return (
-        <form onSubmit={handleSubmit}>
-            <label htmlFor="email" style={{ display: 'block' }}>
-                Email
-            </label>
-            <input
-                id="email"
-                placeholder="Enter your email"
-                type="text"
-                value={values.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={errors.email && touched.email ? 'text-input error' : 'text-input'}
-            />
-            {errors.email &&
-            touched.email && <div className="input-feedback">{errors.email}</div>}
+class Login extends React.Component {
+    constructor(props) {
+        super(props)
+        apiHelpers.apiGet("login-generate-token").then(token => {
+            this.props.values._csrf_token = token.data
+        })
+    }
 
-            <button
-                type="button"
-                className="outline"
-                onClick={handleReset}
-                disabled={!dirty || isSubmitting}
-            >
-                Reset
-            </button>
-            <button type="submit" disabled={isSubmitting}>
-                Submit
-            </button>
+    render() {
+        // if (connectionHelpers.isAuthenticated()) {
+        //     return (
+        //
+        //     )
+        // } else {
+        return (
+            <form onSubmit={this.props.handleSubmit}>
+                <label htmlFor="_username" style={{display: 'block'}}>
+                    Email
+                </label>
+                <input
+                    id="_username"
+                    placeholder="jean.dupont@example.com"
+                    type="text"
+                    value={this.props.values._username}
+                    onChange={this.props.handleChange}
+                    onBlur={this.props.handleBlur}
+                    className={this.props.errors._username && this.props.touched._username ? 'text-input error' : 'text-input'}
+                />
+                {this.props.errors._username &&
+                this.props.touched._username && <div className="input-feedback">{this.props.errors._username}</div>}
 
-            <DisplayFormikState {...props} />
-        </form>
-    );
-};
 
-const EnhancedForm = withFormik({
-    mapPropsToValues: () => ({ email: '' }),
-    validationSchema: Yup.object().shape({
-        email: Yup.string()
-            .email('Invalid email address')
-            .required('Email is required!'),
+                <label htmlFor="_password" style={{display: 'block'}}>
+                    Mot de passe
+                </label>
+                <input
+                    id="_password"
+                    placeholder="********"
+                    type="password"
+                    value={this.props.values._password}
+                    onChange={this.props.handleChange}
+                    onBlur={this.props.handleBlur}
+                    className={this.props.errors._password && this.props.touched._password ? 'text-input error' : 'text-input'}
+                />
+                {this.props.errors._password &&
+                this.props.touched._password && <div className="input-feedback">{this.props.errors._password}</div>}
+
+                <label htmlFor="_remember_me" style={{display: 'block'}}>
+                    Se souvenir de moi
+                </label>
+                <input
+                    id="_remember_me"
+                    type="checkbox"
+                    value={"on"}
+                    onChange={this.props.handleChange}
+                    onBlur={this.props.handleBlur}
+                    className={'checkbox-input'}
+                />
+
+                <button type="submit" disabled={this.props.isSubmitting}>
+                    Go!
+                </button>
+
+                <Link to="/reset-password">Mot de passe oublié?</Link>
+            </form>
+        )
+        // }
+    }
+}
+
+const LoginForm = withFormik({
+    mapPropsToValues: () => ({_username: '', _password: ''}),
+    validationSchema: object().shape({
+        _username: string()
+            .email('Adresse email invalide!')
+            .required('Adresse email invalide!'),
+        _password: string().required("Mot de passe requis!")
     }),
-    handleSubmit: (values, { setSubmitting }) => {
-        setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            setSubmitting(false);
-        }, 1000);
+    handleSubmit: (values, {setSubmitting}) => {
+        apiHelpers.apiPost("login_check", values).then(() => {
+            if (connectionHelpers.loginUser()) {
+                // TODO: redirect to dashboard
+                console.log("success")
+            } else {
+                // TODO: error feedback
+                console.log("connection failed")
+            }
+            setSubmitting(false)
+        })
     },
-    displayName: 'BasicForm', // helps with React DevTools
-})(Login);
+    displayName: 'LoginForm', // helps with React DevTools
+})(Login)
 
-export default EnhancedForm
+export default LoginForm
