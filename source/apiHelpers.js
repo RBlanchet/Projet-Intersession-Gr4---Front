@@ -21,6 +21,17 @@ async function apiGet(endpoint, id = "") {
     }
 }
 
+/**
+ * Use with caution
+ * */
+function apiGetSync(endpoint, id="") {
+    const url = getUrl(endpoint, id)
+    const xhttp = new XMLHttpRequest()
+    xhttp.open('GET', url, false)
+    xhttp.send()
+    return xhttp
+}
+
 async function apiPost(endpoint, payload, id = "") {
     const url = getUrl(endpoint, id)
     const params = typeof payload === 'string' ? payload : Object.keys(payload).map(
@@ -42,6 +53,7 @@ async function apiPost(endpoint, payload, id = "") {
 
 const apiHelpers = {
     "apiGet": apiGet,
+    "apiGetSync": apiGetSync,
     "apiPost": apiPost
 }
 

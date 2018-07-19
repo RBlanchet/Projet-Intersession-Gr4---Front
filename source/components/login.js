@@ -3,6 +3,7 @@ import {withFormik} from 'formik'
 import {string, object} from 'yup'
 import {Link} from "react-router-dom"
 import apiHelpers from "../apiHelpers"
+import connectionHelpers from "../connectionHelpers"
 
 class Login extends React.Component {
     constructor(props) {
@@ -13,6 +14,11 @@ class Login extends React.Component {
     }
 
     render() {
+        // if (connectionHelpers.isAuthenticated()) {
+        //     return (
+        //
+        //     )
+        // } else {
         return (
             <form onSubmit={this.props.handleSubmit}>
                 <label htmlFor="_username" style={{display: 'block'}}>
@@ -65,6 +71,7 @@ class Login extends React.Component {
                 <Link to="/reset-password">Mot de passe oublié?</Link>
             </form>
         )
+        // }
     }
 }
 
@@ -77,8 +84,14 @@ const LoginForm = withFormik({
         _password: string().required("Mot de passe requis!")
     }),
     handleSubmit: (values, {setSubmitting}) => {
-        apiHelpers.apiPost("login_check", values).then(response => {
-            debugger
+        apiHelpers.apiPost("login_check", values).then(() => {
+            if (connectionHelpers.loginUser()) {
+                // TODO: redirect to dashboard
+                console.log("success")
+            } else {
+                // TODO: error feedback
+                console.log("connection failed")
+            }
             setSubmitting(false)
         })
     },

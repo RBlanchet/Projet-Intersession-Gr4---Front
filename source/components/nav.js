@@ -1,5 +1,6 @@
 import React from "react"
 import {Link} from "react-router-dom"
+import connectionHelpers from "../connectionHelpers"
 
 class Nav extends React.Component {
     constructor(props) {
@@ -7,7 +8,7 @@ class Nav extends React.Component {
     }
 
     render() {
-        if (true) {
+        if (connectionHelpers.isAuthenticated()) {
 
             return (
                 <ul>
@@ -16,6 +17,9 @@ class Nav extends React.Component {
                     </li>
                     <li>
                         <Link to="/about">About</Link>
+                    </li>
+                    <li>
+                        <button onClick={connectionHelpers.logoutUser()}>Se déconnecter</button>
                     </li>
                 </ul>
             )
