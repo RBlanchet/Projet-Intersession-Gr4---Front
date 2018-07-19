@@ -2,6 +2,13 @@ import React from "react"
 import {Link} from "react-router-dom"
 import connectionHelpers from "../connectionHelpers"
 
+function logout() {
+    connectionHelpers.logoutUser()
+    let url = window.location.toString()
+    url = url.split("#")[0]
+    window.location = url
+}
+
 class Nav extends React.Component {
     constructor(props) {
         super(props)
@@ -19,7 +26,7 @@ class Nav extends React.Component {
                         <Link to="/about">About</Link>
                     </li>
                     <li>
-                        <button onClick={connectionHelpers.logoutUser()}>Se déconnecter</button>
+                        <button onClick={logout}>Se déconnecter</button>
                     </li>
                 </ul>
             )

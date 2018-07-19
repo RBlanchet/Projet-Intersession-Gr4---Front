@@ -4,6 +4,7 @@ import {string, object} from 'yup'
 import {Link} from "react-router-dom"
 import apiHelpers from "../apiHelpers"
 import connectionHelpers from "../connectionHelpers"
+import {Redirect} from "react-router-dom"
 
 class Login extends React.Component {
     constructor(props) {
@@ -14,64 +15,64 @@ class Login extends React.Component {
     }
 
     render() {
-        // if (connectionHelpers.isAuthenticated()) {
-        //     return (
-        //
-        //     )
-        // } else {
-        return (
-            <form onSubmit={this.props.handleSubmit}>
-                <label htmlFor="_username" style={{display: 'block'}}>
-                    Email
-                </label>
-                <input
-                    id="_username"
-                    placeholder="jean.dupont@example.com"
-                    type="text"
-                    value={this.props.values._username}
-                    onChange={this.props.handleChange}
-                    onBlur={this.props.handleBlur}
-                    className={this.props.errors._username && this.props.touched._username ? 'text-input error' : 'text-input'}
-                />
-                {this.props.errors._username &&
-                this.props.touched._username && <div className="input-feedback">{this.props.errors._username}</div>}
+        if (connectionHelpers.isAuthenticated()) {
+            return (
+                <Redirect to={"/about"}/>
+            )
+        } else {
+            return (
+                <form onSubmit={this.props.handleSubmit}>
+                    <label htmlFor="_username" style={{display: 'block'}}>
+                        Email
+                    </label>
+                    <input
+                        id="_username"
+                        placeholder="jean.dupont@example.com"
+                        type="text"
+                        value={this.props.values._username}
+                        onChange={this.props.handleChange}
+                        onBlur={this.props.handleBlur}
+                        className={this.props.errors._username && this.props.touched._username ? 'text-input error' : 'text-input'}
+                    />
+                    {this.props.errors._username &&
+                    this.props.touched._username && <div className="input-feedback">{this.props.errors._username}</div>}
 
 
-                <label htmlFor="_password" style={{display: 'block'}}>
-                    Mot de passe
-                </label>
-                <input
-                    id="_password"
-                    placeholder="********"
-                    type="password"
-                    value={this.props.values._password}
-                    onChange={this.props.handleChange}
-                    onBlur={this.props.handleBlur}
-                    className={this.props.errors._password && this.props.touched._password ? 'text-input error' : 'text-input'}
-                />
-                {this.props.errors._password &&
-                this.props.touched._password && <div className="input-feedback">{this.props.errors._password}</div>}
+                    <label htmlFor="_password" style={{display: 'block'}}>
+                        Mot de passe
+                    </label>
+                    <input
+                        id="_password"
+                        placeholder="********"
+                        type="password"
+                        value={this.props.values._password}
+                        onChange={this.props.handleChange}
+                        onBlur={this.props.handleBlur}
+                        className={this.props.errors._password && this.props.touched._password ? 'text-input error' : 'text-input'}
+                    />
+                    {this.props.errors._password &&
+                    this.props.touched._password && <div className="input-feedback">{this.props.errors._password}</div>}
 
-                <label htmlFor="_remember_me" style={{display: 'block'}}>
-                    Se souvenir de moi
-                </label>
-                <input
-                    id="_remember_me"
-                    type="checkbox"
-                    value={"on"}
-                    onChange={this.props.handleChange}
-                    onBlur={this.props.handleBlur}
-                    className={'checkbox-input'}
-                />
+                    <label htmlFor="_remember_me" style={{display: 'block'}}>
+                        Se souvenir de moi
+                    </label>
+                    <input
+                        id="_remember_me"
+                        type="checkbox"
+                        value={"on"}
+                        onChange={this.props.handleChange}
+                        onBlur={this.props.handleBlur}
+                        className={'checkbox-input'}
+                    />
 
-                <button type="submit" disabled={this.props.isSubmitting}>
-                    Go!
-                </button>
+                    <button type="submit" disabled={this.props.isSubmitting}>
+                        Go!
+                    </button>
 
-                <Link to="/reset-password">Mot de passe oublié?</Link>
-            </form>
-        )
-        // }
+                    <Link to="/reset-password">Mot de passe oublié?</Link>
+                </form>
+            )
+        }
     }
 }
 
@@ -85,14 +86,14 @@ const LoginForm = withFormik({
     }),
     handleSubmit: (values, {setSubmitting}) => {
         apiHelpers.apiPost("login_check", values).then(() => {
+            setSubmitting(false)
             if (connectionHelpers.loginUser()) {
                 // TODO: redirect to dashboard
-                console.log("success")
+                window.location += "about"
             } else {
                 // TODO: error feedback
                 console.log("connection failed")
             }
-            setSubmitting(false)
         })
     },
     displayName: 'LoginForm', // helps with React DevTools

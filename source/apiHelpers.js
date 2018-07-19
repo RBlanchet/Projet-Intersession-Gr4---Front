@@ -3,7 +3,6 @@ import axios from "axios"
 "use strict"
 
 function getUrl(endpoint, id="") {
-    // url = `http://192.168.33.10/intersession/web/app_dev.php/${endpoint}/${id}`
     const baseUrl = "http://192.168.33.10/intersession/web/app_dev.php/"
     if (id !== "") {
         return `${baseUrl}${endpoint}/${id}`
