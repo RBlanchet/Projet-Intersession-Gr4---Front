@@ -18,20 +18,19 @@ class Nav extends React.Component {
         if (connectionHelpers.isAuthenticated()) {
 
             return (
-                <ul>
-                    {/*<li>*/}
-                        {/*<Link to="/">Connexion</Link>*/}
-                    {/*</li>*/}
-                    <li>
-                        <Link to="/dashboard">Tableau de bord</Link>
-                    </li>
-                    <li>
-                        <Link to="/users">Gestion des utilisateurs</Link>
-                    </li>
-                    <li>
-                        <button onClick={logout}>Se déconnecter</button>
-                    </li>
-                </ul>
+                <div className={"nav"}>
+                    {/*<Link to="/">Connexion</Link>*/}
+                    <Link className={"nav__item"} to="/dashboard">
+                        <span className={"nav__item-text"}>Tableau de bord</span>
+                    </Link>
+                    <Link className={"nav__item"}  to="/users">
+                        <span className={"nav__item-text"}>Gestion des utilisateurs</span>
+                    </Link>
+                    <button className={"nav__item"}  onClick={logout}>
+                        <i className="fas fa-times-circle"/>
+                        <span className={"nav__item-text"}>Se déconnecter</span>
+                    </button>
+                </div>
             )
         } else {
             return ""

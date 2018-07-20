@@ -8,10 +8,8 @@ import Users from "./components/users"
 
 const Main = () => (
     <Router>
-        <div>
+        <main className={"main"}>
             <Nav/>
-
-            <hr/>
 
             <Route exact path="/" component={Login}/>
             <Route path="/reset-password" component={Login}/>
@@ -19,7 +17,7 @@ const Main = () => (
             <Route path="/users" component={Users}/>
 
             <Route path="/dashboard" component={Dashboard}/>
-        </div>
+        </main>
     </Router>
 )
 // onEnter={requireAuth}

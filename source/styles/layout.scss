@@ -1,0 +1,40 @@
+.main {
+  position: relative;
+  padding-left: $nav-width;
+  min-height: 100vh;
+  font-family: Roboto, sans-serif;
+}
+
+.nav {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: $nav-width;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  &__item {
+    @include reset();
+    background-color: $nav-bg;
+    width: 100%;
+    height: $nav-width;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-bottom: 2px solid darken($nav-bg, 5);
+    text-align: center;
+    text-decoration: none;
+    &, &:active, &:focus, &:visited {
+      color: white;
+    }
+  }
+  &__item-text {
+    font-size: 15px;
+  }
+}
+
+.content {
+  padding: 1px;
+}

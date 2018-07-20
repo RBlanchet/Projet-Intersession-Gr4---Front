@@ -28,7 +28,7 @@ module.exports = (options) => ({
                 ],
             },
             {
-                test: /\.scss$/,
+                test: /\.(scss|css)$/,
                 use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                         fallback: 'style-loader',
                         use: [
@@ -55,7 +55,7 @@ module.exports = (options) => ({
                                     {
                                         sourceMap: true,
                                         includePaths: [
-                                            path.join(conf.ASSETS, 'scss'),
+                                            path.join(conf.ASSETS, 'styles'),
                                         ]
                                     }
                             },
@@ -65,11 +65,18 @@ module.exports = (options) => ({
                 )
             },
             {
-                test: /\.(eot|otf|ttf|woff|woff2)$/,
-                use: 'file-loader',
+                test: /.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+                use: [{
+                    loader: 'file-loader',
+                    options: {
+                        name: '[name].[ext]',
+                        outputPath: 'fonts/',    // where the fonts will go
+                        publicPath: '../'       // override the default path
+                    }
+                }]
             },
             {
-                test: /\.(jpg|png|gif|svg)$/,
+                test: /\.(jpg|png|gif)$/,
                 use: [
                     {
                         loader: 'file-loader',

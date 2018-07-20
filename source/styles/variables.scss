@@ -1,0 +1,16 @@
+// SIZES
+
+$nav-width: 100px;
+
+
+// COLORS
+
+$nav-bg: #3a70ff;
+
+// MIXINS
+
+@mixin reset() {
+  border: none;
+  margin: 0;
+  padding: 0;
+}

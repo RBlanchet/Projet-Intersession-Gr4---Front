@@ -3,7 +3,7 @@ const path = require('path')
 const conf = {
     SRC_DIR: 'source',
     DIST_DIR: 'dist',
-    ASSETS_DIR: 'assets',
+    ASSETS_DIR: 'source',
     DEV_ENTRY_JS_FILE: 'main',
     INDEX_HTML_FILE: 'index.html',
 }
