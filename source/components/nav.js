@@ -21,19 +21,21 @@ class Nav extends React.Component {
                 <div className={"nav"}>
                     {/*<Link to="/">Connexion</Link>*/}
                     <Link className={"nav__item"} to="/dashboard">
+                        <i className="fas fa-tachometer-alt nav__item-icon"/>
                         <span className={"nav__item-text"}>Tableau de bord</span>
                     </Link>
-                    <Link className={"nav__item"}  to="/users">
+                    <Link className={"nav__item"} to="/users">
+                        <i className="fas fa-users nav__item-icon"/>
                         <span className={"nav__item-text"}>Gestion des utilisateurs</span>
                     </Link>
-                    <button className={"nav__item"}  onClick={logout}>
-                        <i className="fas fa-times-circle"/>
+                    <button className={"nav__item nav__item--last"} onClick={logout}>
+                        <i className="fas fa-times-circle fa-lg nav__item-icon"/>
                         <span className={"nav__item-text"}>Se déconnecter</span>
                     </button>
                 </div>
             )
         } else {
-            return ""
+            return (<div className={"nav"}/>)
         }
     }
 }

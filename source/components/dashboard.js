@@ -3,7 +3,7 @@ import {Link} from "react-router-dom"
 import connectionHelpers from "../connectionHelpers"
 
 
-class Users extends React.Component {
+class Dashboard extends React.Component {
     // constructor(props) {
     //     super(props)
     // }
@@ -12,14 +12,14 @@ class Users extends React.Component {
         return (
             <div className={"content"}>
                 <div className="content__header">
-                    <h1 style={{margin: 0}}>Utilisateurs</h1>
+                    <h1 style={{margin: 0}}>Tableau de bord</h1>
                 </div>
                 <div className="content__inner">
-                    Lorem
+                    Something something
                 </div>
             </div>
         )
     }
 }
 
-export default Users
+export default Dashboard

@@ -5,6 +5,7 @@ import {HashRouter as Router, Route} from "react-router-dom"
 import Nav from "./components/nav"
 import Login from "./components/login"
 import Users from "./components/users"
+import Dashboard from "./components/dashboard"
 
 const Main = () => (
     <Router>
@@ -19,14 +20,6 @@ const Main = () => (
             <Route path="/dashboard" component={Dashboard}/>
         </main>
     </Router>
-)
-// onEnter={requireAuth}
-
-
-const Dashboard = () => (
-    <div>
-        <h2>Tableau de bord</h2>
-    </div>
 )
 
 
