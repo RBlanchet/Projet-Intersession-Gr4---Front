@@ -32,3 +32,17 @@ The code for static is in /source directory, compiled code by webpack goes in /d
 ## Production build
 
 TODO
+
+## General info
+
+### user Info:
+
+on register:
+```
+{
+   "lastname" : "Romain",
+   "firstname": "Blanchet",
+   "email": "r.blanchet@it-akademy.fr",
+   "plainPassword": "1234"
+} 
+```
