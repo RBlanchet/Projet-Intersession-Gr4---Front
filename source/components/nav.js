@@ -1,6 +1,6 @@
 import React from "react"
 import {Link} from "react-router-dom"
-import connectionHelpers from "../connectionHelpers"
+import connectionHelpers from "../helpers/connectionHelpers"
 
 function logout() {
     connectionHelpers.logoutUser()

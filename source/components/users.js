@@ -1,6 +1,9 @@
 import React from "react"
 import users from "../fake-data/fake_users"
 import UsersForm from "./usersForm"
+import {normalize} from 'normalizr'
+import apiHelpers from "../helpers/apiHelpers"
+import usersSchema from "../schemas/users"
 
 
 class Users extends React.Component {
@@ -12,9 +15,10 @@ class Users extends React.Component {
     }
 
     componentDidMount() {
-        setTimeout(() => {
-            this.setState({users: users})
-        }, 1000)
+        apiHelpers.apiGet("users").then((response) => {
+            console.log(normalize(response.data, usersSchema))
+            this.setState({users: normalize(response.data, usersSchema)})
+        })
     }
 
     render() {
@@ -50,13 +54,15 @@ class UsersCRUD extends React.Component {
     setEditing(id) {
         return () => {
             this.setState({editing: false})
-            setTimeout(() => {this.setState({editing: id})}, 1)
+            setTimeout(() => {
+                this.setState({editing: id})
+            }, 1)
         }
     }
 
     render() {
-        if (this.props.users) {
-            const users = this.props.users
+        const users = this.props.users
+        if (users.result) {
             return (
                 <div>
                     <div>
@@ -67,7 +73,7 @@ class UsersCRUD extends React.Component {
                         }
                     </div>
                     <div>
-                        {users.result.users.map(userId => (
+                        {users.result.map(userId => (
                             <div key={userId} onClick={this.setEditing(userId)}>
                                 {users.entities.users[userId].email}
                             </div>

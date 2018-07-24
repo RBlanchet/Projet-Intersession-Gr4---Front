@@ -3,7 +3,7 @@ import {normalize, schema} from 'normalizr'
 const data = {
     users: [
         {
-            email: "test@test.com",
+            login: "test@test.com",
             id: 1,
             protectedRoles: [
                 {
@@ -13,7 +13,7 @@ const data = {
             ]
         },
         {
-            email: "truite@tracker.com",
+            login: "truite@tracker.com",
             id: 2,
             protectedRoles: [
                 {
@@ -23,7 +23,7 @@ const data = {
             ]
         },
         {
-            email: "truite2@tracker.com",
+            login: "truite2@tracker.com",
             id: 3,
             protectedRoles: [
                 {
@@ -33,7 +33,7 @@ const data = {
             ]
         },
         {
-            email: "truite23@tracker.com",
+            login: "truite23@tracker.com",
             firstname: "Tracker",
             lastname: "Truite",
             id: 123,

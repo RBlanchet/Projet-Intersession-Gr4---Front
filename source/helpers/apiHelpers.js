@@ -1,8 +1,8 @@
 import axios from "axios"
 
-"use strict"
+const storage = window.localStorage
 
-function getUrl(endpoint, id="") {
+function getUrl(endpoint, id = "") {
     const baseUrl = "http://192.168.33.10/intersession/web/app_dev.php/"
     if (id !== "") {
         return `${baseUrl}${endpoint}/${id}`
@@ -11,10 +11,28 @@ function getUrl(endpoint, id="") {
     }
 }
 
+function getHeaders() {
+    const token = storage.getItem("Auth-Token")
+    if (token) {
+        return {
+            "content-type": "application/json",
+            "X-Auth-Token": token
+        }
+    } else {
+        return {
+            "content-type": "application/json"
+        }
+    }
+}
+
 async function apiGet(endpoint, id = "") {
     const url = getUrl(endpoint, id)
     try {
-        return await axios.get(url)
+        return await axios({
+            method: 'get',
+            url: url,
+            headers: getHeaders()
+        })
     } catch (error) {
         console.error(error)
     }
@@ -23,7 +41,7 @@ async function apiGet(endpoint, id = "") {
 /**
  * Use with caution
  * */
-function apiGetSync(endpoint, id="") {
+function apiGetSync(endpoint, id = "") {
     const url = getUrl(endpoint, id)
     const xhttp = new XMLHttpRequest()
     xhttp.open('GET', url, false)
@@ -33,17 +51,13 @@ function apiGetSync(endpoint, id="") {
 
 async function apiPost(endpoint, payload, id = "") {
     const url = getUrl(endpoint, id)
-    const params = typeof payload === 'string' ? payload : Object.keys(payload).map(
-        function (k) {
-            return encodeURIComponent(k) + '=' + encodeURIComponent(payload[k])
-        }
-    ).join('&')
 
     try {
         return await axios({
             method: 'post',
             url: url,
-            data: params
+            data: JSON.stringify(payload),
+            headers: getHeaders()
         })
     } catch (error) {
         console.error(error)
