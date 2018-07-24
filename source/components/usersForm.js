@@ -65,7 +65,7 @@ const Form = (props) => {
             <input
                 id="lastname"
                 placeholder="Dupond"
-                type="password"
+                type="text"
                 value={props.values.lastname}
                 onChange={props.handleChange}
                 onBlur={props.handleBlur}
@@ -78,7 +78,7 @@ const Form = (props) => {
             <input
                 id="firstname"
                 placeholder="Jean"
-                type="password"
+                type="text"
                 value={props.values.firstname}
                 onChange={props.handleChange}
                 onBlur={props.handleBlur}
@@ -96,11 +96,6 @@ const Form = (props) => {
 
 class UsersForm extends React.Component {
 
-    constructor(props) {
-        console.log(props)
-        super(props)
-    }
-
     handleSubmit(values, {setSubmitting}) {
         setTimeout(() => {
             alert(JSON.stringify(values, null, 2))
@@ -109,38 +104,41 @@ class UsersForm extends React.Component {
     }
 
     render() {
-        // console.log(this.props)
-        // let editingUser
-        // if (this.props.editing === "new") {
-        //     editingUser = false
-        // } else {
-        //     editingUser = this.props.users.entities.users[this.props.editing]
-        // }
-        // console.log(editingUser)
+
+        let editingUser
+        if (this.props.editing === "new") {
+            editingUser = false
+        } else {
+            editingUser = this.props.users.entities.users[this.props.editing]
+        }
         return (
-            <Formik
-                {...this.props}
-                validationSchema={
-                    object().shape({
-                        email: string()
-                            .email('Adresse email invalide!')
-                            .required('Adresse email invalide!'),
-                        plainPasswordConfirm: string()
-                            .equalTo(ref('plainPassword'), 'Les mots de passe doivent correspondre')
-                    })
-                }
-                onSubmit={this.handleSubmit}
-                // initialValues={editingUser
-                //     ? {
-                //         email: editingUser.email,
-                //         lastname: editingUser.lastname,
-                //         firstname: editingUser.firstname,
-                //     }
-                //     : {}}
-                render={formikProps =>
-                    <Form {...formikProps} displayName={"UsersInnerForm"}/>
-                }
-            />
+            <div>
+                <Formik
+                    {...this.props}
+                    validationSchema={
+                        object().shape({
+                            email: string()
+                                .email('Adresse email invalide!')
+                                .required('Adresse email invalide!'),
+                            plainPasswordConfirm: string()
+                                .equalTo(ref('plainPassword'), 'Les mots de passe doivent correspondre')
+                        })
+                    }
+                    onSubmit={this.handleSubmit}
+                    initialValues={{
+                        email: editingUser.email,
+                        lastname: editingUser.lastname,
+                        firstname: editingUser.firstname,
+                    }}
+                    render={formikProps =>
+                        <Form {...formikProps} displayName={"UsersInnerForm"}/>
+                    }
+                />
+                <button onClick={this.props.setEditing(false)}>
+                    X
+                </button>
+                <hr/>
+            </div>
         )
 
     }

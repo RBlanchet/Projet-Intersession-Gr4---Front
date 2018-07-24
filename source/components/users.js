@@ -3,7 +3,6 @@ import users from "../fake-data/fake_users"
 import UsersForm from "./usersForm"
 
 
-
 class Users extends React.Component {
     constructor(props) {
         super(props)
@@ -25,9 +24,6 @@ class Users extends React.Component {
                     <UsersHeader users={this.state.users} editing={this.state.editing}/>
                 </div>
                 <div className="content__inner">
-                    {this.state.editing
-                        ? <UsersForm users={users} editing={this.state.editing} initialValues={{email:"email"}}/>
-                        : ""}
                     <UsersCRUD users={this.state.users}/>
                 </div>
             </div>
@@ -46,13 +42,15 @@ class UsersCRUD extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            "editing": false
+            editing: false
         }
+        this.setEditing = this.setEditing.bind(this)
     }
 
     setEditing(id) {
         return () => {
-            this.setState({"editing": id})
+            this.setState({editing: false})
+            setTimeout(() => {this.setState({editing: id})}, 1)
         }
     }
 
@@ -64,17 +62,18 @@ class UsersCRUD extends React.Component {
                     <div>
                         {
                             this.state.editing
-                                ? <UsersForm/>
+                                ? <UsersForm users={users} editing={this.state.editing} setEditing={this.setEditing}/>
                                 : ""
                         }
                     </div>
                     <div>
                         {users.result.users.map(userId => (
                             <div key={userId} onClick={this.setEditing(userId)}>
-                                {users.entities.users[userId].username}
+                                {users.entities.users[userId].email}
                             </div>
                         ))}
                     </div>
+                    <button onClick={this.setEditing("new")}>Créer un utilisateur</button>
                 </div>
             )
         } else {

@@ -1,6 +1,6 @@
 // Scrips imports
-import "./main_renderer"
 import "./helpers/yupMethods"
+import "./main_renderer"
 
 // Styles imports
 import './styles/index.scss'
