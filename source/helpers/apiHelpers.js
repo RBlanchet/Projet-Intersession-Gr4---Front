@@ -84,7 +84,9 @@ async function withPayload(method, endpoint, payload, id) {
 const apiHelpers = {
     "apiGet": apiGet,
     "apiGetSync": apiGetSync,
-    "apiPost": apiPost
+    "apiPost": apiPost,
+    "apiPatch": apiPatch,
+    "apiPut": apiPut,
 }
 
 export default apiHelpers

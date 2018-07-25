@@ -1,9 +1,9 @@
 import React from "react"
-import users from "../fake-data/fake_users"
 import UsersForm from "./usersForm"
 import {normalize} from 'normalizr'
 import apiHelpers from "../helpers/apiHelpers"
 import usersSchema from "../schemas/users"
+import jobSchema from "../schemas/jobs"
 
 
 class Users extends React.Component {
@@ -18,16 +18,19 @@ class Users extends React.Component {
         apiHelpers.apiGet("users").then((response) => {
             this.setState({users: normalize(response.data, usersSchema)})
         })
+        apiHelpers.apiGet("jobs").then((response) => {
+            this.setState({jobs: normalize(response.data, jobSchema)})
+        })
     }
 
     render() {
         return (
             <div className={"content"}>
                 <div className="content__header">
-                    <UsersHeader users={this.state.users} editing={this.state.editing}/>
+                    <UsersHeader/>
                 </div>
                 <div className="content__inner">
-                    <UsersCRUD users={this.state.users}/>
+                    <UsersCRUD users={this.state.users} jobs={this.state.jobs}/>
                 </div>
             </div>
         )
@@ -61,7 +64,8 @@ class UsersCRUD extends React.Component {
 
     render() {
         const users = this.props.users
-        if (users.result) {
+        const jobs = this.props.jobs
+        if (users.result && jobs) {
             return (
                 <div>
                     <div>
@@ -69,6 +73,7 @@ class UsersCRUD extends React.Component {
                             this.state.editing
                                 ? <UsersForm
                                     users={users}
+                                    jobs={jobs}
                                     editing={this.state.editing}
                                     setEditing={this.setEditing}/>
                                 : ""
@@ -77,7 +82,9 @@ class UsersCRUD extends React.Component {
                     <div>
                         {users.result.map(userId => (
                             <div key={userId} onClick={this.setEditing(userId)}>
-                                {users.entities.users[userId].email}
+                                {users.entities.users[userId].email} |
+                                {" "}
+                                {users.entities.jobs[users.entities.users[userId].job].name}
                             </div>
                         ))}
                     </div>
