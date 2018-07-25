@@ -25,17 +25,25 @@ function getHeaders() {
     }
 }
 
-async function apiGet(endpoint, id = "") {
+async function withoutPayload(method, endpoint, id = "") {
     const url = getUrl(endpoint, id)
     try {
         return await axios({
-            method: 'get',
+            method: method,
             url: url,
             headers: getHeaders()
         })
     } catch (error) {
         console.error(error)
     }
+}
+
+function apiGet(endpoint, id='') {
+    return withoutPayload('get', endpoint, id)
+}
+
+function apiDelete(endpoint, id='') {
+    return withoutPayload('delete', endpoint, id)
 }
 
 /**
@@ -83,6 +91,7 @@ async function withPayload(method, endpoint, payload, id) {
 
 const apiHelpers = {
     "apiGet": apiGet,
+    "apiDelete": apiDelete,
     "apiGetSync": apiGetSync,
     "apiPost": apiPost,
     "apiPatch": apiPatch,

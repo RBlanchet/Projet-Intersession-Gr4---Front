@@ -151,7 +151,15 @@ class UsersForm extends React.Component {
         }
     }
 
-
+    deleteUser(id) {
+        console.log(this)
+        return () => {
+            apiHelpers.apiDelete("users", id).then(response => {
+                console.log(response)
+                // TODO: feedback
+            })
+        }
+    }
 
     render() {
 
@@ -192,6 +200,9 @@ class UsersForm extends React.Component {
                 <button onClick={this.props.setEditing(false)}>
                     X
                 </button>
+                {this.props.editing !== "new"
+                    ? <button onClick={this.deleteUser(editingUser.id)}>Supprimer</button>
+                    : ""}
                 <hr/>
             </div>
         )
