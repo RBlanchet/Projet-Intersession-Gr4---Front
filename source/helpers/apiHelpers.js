@@ -49,12 +49,28 @@ function apiGetSync(endpoint, id = "") {
     return xhttp
 }
 
-async function apiPost(endpoint, payload, id = "") {
+function apiPost(endpoint, payload, id = "") {
+    return withPayload("post", endpoint, payload, id)
+}
+
+function apiPut(endpoint, payload, id = "") {
+    return withPayload("put", endpoint, payload, id)
+}
+
+function apiPatch(endpoint, payload, id = "") {
+    return withPayload("patch", endpoint, payload, id)
+}
+
+async function withPayload(method, endpoint, payload, id) {
+    if (!["post", "put", "patch"].includes(method)) {
+        throw error(`Incorrect method ${method} for use in withPayload`)
+    }
+
     const url = getUrl(endpoint, id)
 
     try {
         return await axios({
-            method: 'post',
+            method: method,
             url: url,
             data: JSON.stringify(payload),
             headers: getHeaders()
@@ -63,6 +79,7 @@ async function apiPost(endpoint, payload, id = "") {
         console.error(error)
     }
 }
+
 
 const apiHelpers = {
     "apiGet": apiGet,

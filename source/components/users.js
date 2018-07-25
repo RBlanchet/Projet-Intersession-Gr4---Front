@@ -16,7 +16,6 @@ class Users extends React.Component {
 
     componentDidMount() {
         apiHelpers.apiGet("users").then((response) => {
-            console.log(normalize(response.data, usersSchema))
             this.setState({users: normalize(response.data, usersSchema)})
         })
     }
@@ -68,7 +67,10 @@ class UsersCRUD extends React.Component {
                     <div>
                         {
                             this.state.editing
-                                ? <UsersForm users={users} editing={this.state.editing} setEditing={this.setEditing}/>
+                                ? <UsersForm
+                                    users={users}
+                                    editing={this.state.editing}
+                                    setEditing={this.setEditing}/>
                                 : ""
                         }
                     </div>

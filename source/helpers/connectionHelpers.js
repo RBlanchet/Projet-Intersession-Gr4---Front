@@ -6,6 +6,9 @@ function isAuthenticated() {
     // TODO: validate Token age
     // 1 minute: 60 * 1000ms
     const tokenAge = (new Date().getTime()) - parseInt(storage.getItem("Date"))
+    if (tokenAge >= (1000 * 60 * 60 * 12)) {
+        logoutUser()
+    }
 
     if (!storage.getItem("Auth-Token")) {
         if (window.location.hash !== "#/") {
@@ -20,12 +23,9 @@ function loginUser(response) {
     if (response.status === 201) {
         const token = response.data.value
         const createdAt = Date.parse(response.headers.date)
-        console.log(createdAt)
         storage.setItem("Auth-Token", token)
         storage.setItem("Date", String(createdAt))
     }
-    console.log(response)
-    debugger
     return isAuthenticated()
 }
 

@@ -1,6 +1,7 @@
 import React from "react"
 import {string, object, ref} from 'yup'
 import {Formik} from 'formik'
+import {diff} from 'deep-object-diff'
 
 const Form = (props) => {
 
@@ -95,7 +96,8 @@ class UsersForm extends React.Component {
 
     handleSubmit(values, {setSubmitting}) {
         setTimeout(() => {
-            alert(JSON.stringify(values, null, 2))
+            const changed = diff(this.initialValues, values)
+            alert(JSON.stringify(changed, null, 2))
             setSubmitting(false)
         }, 100)
     }
