@@ -6,6 +6,7 @@ import Nav from "./components/nav"
 import Login from "./components/login"
 import Users from "./components/users"
 import Dashboard from "./components/dashboard"
+import Projects from "./components/projects"
 
 const Main = () => (
     <Router>
@@ -16,6 +17,8 @@ const Main = () => (
             <Route path="/reset-password" component={Login}/>
 
             <Route path="/users" component={Users}/>
+
+            <Route path="/projects" component={Projects}/>
 
             <Route path="/dashboard" component={Dashboard}/>
         </main>
