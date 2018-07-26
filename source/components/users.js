@@ -12,6 +12,7 @@ class Users extends React.Component {
         this.state = {
             users: false
         }
+        this.reloadUsers = this.reloadUsers.bind(this)
     }
 
     componentDidMount() {
@@ -23,6 +24,12 @@ class Users extends React.Component {
         })
     }
 
+    reloadUsers() {
+        apiHelpers.apiGet("users").then((response) => {
+            this.setState({users: normalize(response.data, usersSchema)})
+        })
+    }
+
     render() {
         return (
             <div className={"content"}>
@@ -30,7 +37,7 @@ class Users extends React.Component {
                     <UsersHeader/>
                 </div>
                 <div className="content__inner">
-                    <UsersCRUD users={this.state.users} jobs={this.state.jobs}/>
+                    <UsersCRUD users={this.state.users} jobs={this.state.jobs} reloadUsers={this.reloadUsers}/>
                 </div>
             </div>
         )
@@ -59,6 +66,9 @@ class UsersCRUD extends React.Component {
             setTimeout(() => {
                 this.setState({editing: id})
             }, 1)
+            if (!id) {
+                this.props.reloadUsers()
+            }
         }
     }
 
@@ -69,14 +79,13 @@ class UsersCRUD extends React.Component {
             return (
                 <div>
                     <div>
-                        {
-                            this.state.editing
-                                ? <UsersForm
-                                    users={users}
-                                    jobs={jobs}
-                                    editing={this.state.editing}
-                                    setEditing={this.setEditing}/>
-                                : ""
+                        {this.state.editing
+                            ? <UsersForm
+                                users={users}
+                                jobs={jobs}
+                                editing={this.state.editing}
+                                setEditing={this.setEditing}/>
+                            : ""
                         }
                     </div>
                     <div>
