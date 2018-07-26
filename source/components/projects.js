@@ -3,6 +3,7 @@ import {normalize} from 'normalizr'
 import apiHelpers from "../helpers/apiHelpers"
 import projectSchema from "../schemas/projects"
 import ProjectsForm from "./projectsForm"
+import usersSchema from "../schemas/users"
 
 
 class Projects extends React.Component {
@@ -17,6 +18,9 @@ class Projects extends React.Component {
         apiHelpers.apiGet("projects").then((response) => {
             this.setState({projects: normalize(response.data, projectSchema)})
         })
+        apiHelpers.apiGet("users").then((response) => {
+            this.setState({users: normalize(response.data, usersSchema)})
+        })
     }
 
     render() {
@@ -26,7 +30,7 @@ class Projects extends React.Component {
                     <ProjectsHeader projects={this.state.projects} editing={this.state.editing}/>
                 </div>
                 <div className="content__inner">
-                    <ProjectsCRUD projects={this.state.projects}/>
+                    <ProjectsCRUD projects={this.state.projects} users={this.state.users}/>
                 </div>
             </div>
         )
@@ -68,6 +72,7 @@ class ProjectsCRUD extends React.Component {
                             this.state.editing
                                 ? <ProjectsForm
                                     projects={projects}
+                                    users={this.props.users}
                                     editing={this.state.editing}
                                     setEditing={this.setEditing}/>
                                 : ""
