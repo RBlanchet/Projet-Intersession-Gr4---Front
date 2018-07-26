@@ -65,8 +65,8 @@ const Form = (props) => {
                             onBlur={props.handleBlur}
                             className={
                                 props.errors.plainPasswordConfirm && props.touched.plainPasswordConfirm
-                                ? 'form__text form__text--error'
-                                : 'form__text'}
+                                    ? 'form__text form__text--error'
+                                    : 'form__text'}
                         />
                         {props.errors.plainPasswordConfirm &&
                         props.touched.plainPasswordConfirm &&
@@ -103,23 +103,25 @@ const Form = (props) => {
                         />
                     </div>
 
-                    <div className={"form__input-block"}>
+                    <div className={"form__input-block form__input-block--double"}>
                         <label className={"form__label"} htmlFor="job">
                             Rôle
                         </label>
-                        <select
-                            name="job"
-                            value={props.values.job}
-                            onChange={props.handleChange}
-                            onBlur={props.handleBlur}
-                            className={'select'}>
+                        <div className="form__select-wrapper">
+                            <select
+                                name="job"
+                                value={props.values.job}
+                                onChange={props.handleChange}
+                                onBlur={props.handleBlur}
+                                className={'form__select'}>
 
-                            <option value="" disabled={true}>Rôle</option>
-                            {jobs.result.map(jobId => (
-                                <option key={jobId} value={jobId}>{jobs.entities.jobs[jobId].name}</option>
-                            ))}
+                                <option value="" disabled={true}>Rôle</option>
+                                {jobs.result.map(jobId => (
+                                    <option key={jobId} value={jobId}>{jobs.entities.jobs[jobId].name}</option>
+                                ))}
 
-                        </select>
+                            </select>
+                        </div>
                         {props.errors.job &&
                         props.touched.job &&
                         <div className="form__error">{props.errors.job}</div>}

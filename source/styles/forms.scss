@@ -59,8 +59,39 @@
       background-color: transparentize($error-color, .9);
     }
   }
+  &__select {
+    height: 25px;
+    border: none;
+    background-color: transparent;
+    width: 100%;
+    &, &:active {
+      outline: none;
+    }
+  }
+  &__select-wrapper {
+    position: relative;
+    width: 195px;
+    border: 1px solid $nav-bg;
+    transition: background-color .1s, border-color .1s;
+    &:after {
+      content: "\f078";
+      font-family: "Font Awesome 5 Free";
+      background-color: $nav-bg;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 25px;
+      pointer-events: none;
+      font-weight: 900;
+    }
+  }
 
-  &__error {
+  &__error  {
     font-style: italic;
     color: $error-color;
     font-size: 12px;
