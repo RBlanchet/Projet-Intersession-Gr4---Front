@@ -1,9 +1,9 @@
 import React from "react"
-import users from "../fake-data/fake_users"
 import UsersForm from "./usersForm"
 import {normalize} from 'normalizr'
 import apiHelpers from "../helpers/apiHelpers"
 import usersSchema from "../schemas/users"
+import jobSchema from "../schemas/jobs"
 
 
 class Users extends React.Component {
@@ -12,9 +12,19 @@ class Users extends React.Component {
         this.state = {
             users: false
         }
+        this.reloadUsers = this.reloadUsers.bind(this)
     }
 
     componentDidMount() {
+        apiHelpers.apiGet("users").then((response) => {
+            this.setState({users: normalize(response.data, usersSchema)})
+        })
+        apiHelpers.apiGet("jobs").then((response) => {
+            this.setState({jobs: normalize(response.data, jobSchema)})
+        })
+    }
+
+    reloadUsers() {
         apiHelpers.apiGet("users").then((response) => {
             this.setState({users: normalize(response.data, usersSchema)})
         })
@@ -24,10 +34,10 @@ class Users extends React.Component {
         return (
             <div className={"content"}>
                 <div className="content__header">
-                    <UsersHeader users={this.state.users} editing={this.state.editing}/>
+                    <UsersHeader/>
                 </div>
                 <div className="content__inner">
-                    <UsersCRUD users={this.state.users}/>
+                    <UsersCRUD users={this.state.users} jobs={this.state.jobs} reloadUsers={this.reloadUsers}/>
                 </div>
             </div>
         )
@@ -56,28 +66,34 @@ class UsersCRUD extends React.Component {
             setTimeout(() => {
                 this.setState({editing: id})
             }, 1)
+            if (!id) {
+                this.props.reloadUsers()
+            }
         }
     }
 
     render() {
         const users = this.props.users
-        if (users.result) {
+        const jobs = this.props.jobs
+        if (users.result && jobs) {
             return (
                 <div>
                     <div>
-                        {
-                            this.state.editing
-                                ? <UsersForm
-                                    users={users}
-                                    editing={this.state.editing}
-                                    setEditing={this.setEditing}/>
-                                : ""
+                        {this.state.editing
+                            ? <UsersForm
+                                users={users}
+                                jobs={jobs}
+                                editing={this.state.editing}
+                                setEditing={this.setEditing}/>
+                            : ""
                         }
                     </div>
                     <div>
                         {users.result.map(userId => (
                             <div key={userId} onClick={this.setEditing(userId)}>
-                                {users.entities.users[userId].email}
+                                {users.entities.users[userId].email} |
+                                {" "}
+                                {users.entities.jobs[users.entities.users[userId].job].name}
                             </div>
                         ))}
                     </div>

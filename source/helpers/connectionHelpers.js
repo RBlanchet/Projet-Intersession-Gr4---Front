@@ -1,5 +1,3 @@
-import apiHelpers from "./apiHelpers"
-
 const storage = window.localStorage
 
 function isAuthenticated() {
