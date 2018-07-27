@@ -3,7 +3,7 @@ import axios from "axios"
 const storage = window.localStorage
 
 function getUrl(endpoint, id = "") {
-    const baseUrl = "http://192.168.33.10/intersession/web/app_dev.php/"
+    const baseUrl = "http://192.168.33.10/app_dev.php/"
     if (id !== "") {
         return `${baseUrl}${endpoint}/${id}`
     } else {

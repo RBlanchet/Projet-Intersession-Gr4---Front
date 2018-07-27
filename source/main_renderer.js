@@ -5,6 +5,7 @@ import {HashRouter as Router, Route} from "react-router-dom"
 import Nav from "./components/nav"
 import Login from "./components/login"
 import Users from "./components/users"
+import Tasks from "./components/tasks"
 import Dashboard from "./components/dashboard"
 import Projects from "./components/projects"
 
@@ -19,6 +20,8 @@ const Main = () => (
             <Route path="/users" component={Users}/>
 
             <Route path="/projects" component={Projects}/>
+
+            <Route path="/tasks" component={Tasks}/>
 
             <Route path="/dashboard" component={Dashboard}/>
         </main>
