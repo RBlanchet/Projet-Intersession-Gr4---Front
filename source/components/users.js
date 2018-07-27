@@ -1,6 +1,7 @@
 import React from "react"
 import UsersForm from "./usersForm"
 import {normalize} from 'normalizr'
+import ReactTable from 'react-table'
 import apiHelpers from "../helpers/apiHelpers"
 import usersSchema from "../schemas/users"
 import jobSchema from "../schemas/jobs"
@@ -37,7 +38,10 @@ class Users extends React.Component {
                     <UsersHeader/>
                 </div>
                 <div className="content__inner">
-                    <UsersCRUD users={this.state.users} jobs={this.state.jobs} reloadUsers={this.reloadUsers}/>
+                    <UsersCRUD
+                        users={this.state.users}
+                        jobs={this.state.jobs}
+                        reloadUsers={this.reloadUsers}/>
                 </div>
             </div>
         )
@@ -61,7 +65,7 @@ class UsersCRUD extends React.Component {
     }
 
     setEditing(id) {
-        return () => {
+        return (e) => {
             this.setState({editing: false})
             setTimeout(() => {
                 this.setState({editing: id})
@@ -69,8 +73,29 @@ class UsersCRUD extends React.Component {
             if (!id) {
                 this.props.reloadUsers()
             }
+            if (e) {
+                e.stopPropagation()
+            }
         }
     }
+
+    columns = [{
+        id: "email",
+        Header: 'Email',
+        accessor: id => this.props.users.entities.users[id].email
+    }, {
+        id: "firstname",
+        Header: 'Prénom',
+        accessor: id => this.props.users.entities.users[id].firstname
+    }, {
+        id: "lastname",
+        Header: 'Nom',
+        accessor: id => this.props.users.entities.users[id].lastname,
+    }, {
+        id: "job",
+        Header: 'Rôle',
+        accessor: id => this.props.users.entities.jobs[this.props.users.entities.users[id].job].name,
+    }]
 
     render() {
         const users = this.props.users
@@ -89,13 +114,29 @@ class UsersCRUD extends React.Component {
                         }
                     </div>
                     <div>
-                        {users.result.map(userId => (
-                            <div key={userId} onClick={this.setEditing(userId)}>
-                                {users.entities.users[userId].email} |
-                                {" "}
-                                {users.entities.jobs[users.entities.users[userId].job].name}
-                            </div>
-                        ))}
+                        {/*onClick={this.setEditing(userId)*/}
+                        <ReactTable
+                            data={users.result}
+                            columns={this.columns}
+                            showPageSizeOptions={false}
+                            defaultPageSize={10}
+                            previousText={'Précedent'}
+                            nextText={'Suivant'}
+                            loadingText={'Chargement'}
+                            noDataText='Aucun utilisateur trouvé'
+                            pageText='Page'
+                            ofText='sur'
+                            rowsText='lignes'
+                            getTdProps={(state, rowInfo) => {
+                                return {
+                                    onClick: (e) => {
+                                        if (rowInfo) {
+                                            this.setEditing(rowInfo.original)(e)
+                                        }
+                                    }
+                                }
+                            }}
+                        />
                     </div>
                     <button onClick={this.setEditing("new")}>Créer un utilisateur</button>
                 </div>
