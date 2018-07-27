@@ -25,6 +25,10 @@ class Nav extends React.Component {
                         <i className="fas fa-users nav__item-icon"/>
                         <span className={"nav__item-text"}>Gestion des utilisateurs</span>
                     </Link>
+                    <Link className={"nav__item"} to="/projects">
+                        <i className="fas fa-users nav__item-icon"/>
+                        <span className={"nav__item-text"}>Gestion des projets</span>
+                    </Link>
                     <button className={"nav__item nav__item--last"} onClick={logout}>
                         <i className="fas fa-times-circle fa-lg nav__item-icon"/>
                         <span className={"nav__item-text"}>Se déconnecter</span>
