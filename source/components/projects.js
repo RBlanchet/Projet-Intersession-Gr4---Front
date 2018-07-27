@@ -88,11 +88,11 @@ class ProjectsCRUD extends React.Component {
     }, {
         id: "date_start",
         Header: 'Date de début',
-        accessor: id => this.props.projects.entities.projects[id].date_start
+        accessor: id => this.props.projects.entities.projects[id].date_start.substr(0, 10) + ' ' + this.props.projects.entities.projects[id].date_start.substr(11, 5) + ':00'
     }, {
         id: "date_end",
         Header: 'Date de fin',
-        accessor: id => this.props.projects.entities.projects[id].date_end
+        accessor: id => this.props.projects.entities.projects[id].date_end.substr(0, 10) + ' ' + this.props.projects.entities.projects[id].date_end.substr(11, 5) + ':00'
     }]
 
     render() {
