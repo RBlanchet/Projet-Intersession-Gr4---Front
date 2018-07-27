@@ -4,14 +4,19 @@ import apiHelpers from "../helpers/apiHelpers"
 import projectSchema from "../schemas/projects"
 import ProjectsForm from "./projectsForm"
 import usersSchema from "../schemas/users"
+import ReactTable from "react-table"
 
 
 class Projects extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            projects: false
+            projects: false,
+            editing: false,
         }
+
+        this.setEditing = this.setEditing.bind(this)
+        this.reloadProjects = this.reloadProjects.bind(this)
     }
 
     componentDidMount() {
@@ -23,14 +28,41 @@ class Projects extends React.Component {
         })
     }
 
+    reloadProjects() {
+        apiHelpers.apiGet("projects").then((response) => {
+            this.setState({projects: normalize(response.data, projectSchema)})
+        })
+    }
+
+    setEditing(id) {
+        return (e) => {
+            this.setState({editing: false})
+            setTimeout(() => {
+                this.setState({editing: id})
+            }, 1)
+            if (!id) {
+                this.reloadProjects()
+            }
+            if (e) {
+                e.stopPropagation()
+            }
+        }
+    }
+
     render() {
         return (
             <div className={"content"}>
                 <div className="content__header">
-                    <ProjectsHeader projects={this.state.projects} editing={this.state.editing}/>
+                    <ProjectsHeader setEditing={this.setEditing}/>
                 </div>
                 <div className="content__inner">
-                    <ProjectsCRUD projects={this.state.projects} users={this.state.users}/>
+                    <ProjectsCRUD
+                        projects={this.state.projects}
+                        users={this.state.users}
+                        reloadProjects={this.reloadProjects}
+                        setEditing={this.setEditing}
+                        editing={this.state.editing}
+                    />
                 </div>
             </div>
         )
@@ -38,29 +70,30 @@ class Projects extends React.Component {
 }
 
 
-const ProjectsHeader = () => {
+const ProjectsHeader = props => {
     return (
-        <h1 style={{margin: 0}}>Projets</h1>
+        <div>
+            <h1 style={{margin: 0}}>Projets</h1>
+            <button onClick={props.setEditing("new")}>Créer un projet</button>
+        </div>
     )
 }
 
 class ProjectsCRUD extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            editing: false
-        }
-        this.setEditing = this.setEditing.bind(this)
-    }
 
-    setEditing(id) {
-        return () => {
-            this.setState({editing: false})
-            setTimeout(() => {
-                this.setState({editing: id})
-            }, 1)
-        }
-    }
+    columns = [{
+        id: "name",
+        Header: 'Nom',
+        accessor: id => this.props.projects.entities.projects[id].name
+    }, {
+        id: "date_start",
+        Header: 'Date de début',
+        accessor: id => this.props.projects.entities.projects[id].date_start
+    }, {
+        id: "date_end",
+        Header: 'Date de fin',
+        accessor: id => this.props.projects.entities.projects[id].date_end
+    }]
 
     render() {
         const projects = this.props.projects
@@ -69,23 +102,43 @@ class ProjectsCRUD extends React.Component {
                 <div>
                     <div>
                         {
-                            this.state.editing
+                            this.props.editing
                                 ? <ProjectsForm
                                     projects={projects}
                                     users={this.props.users}
-                                    editing={this.state.editing}
-                                    setEditing={this.setEditing}/>
+                                    editing={this.props.editing}
+                                    setEditing={this.props.setEditing}/>
                                 : ""
                         }
                     </div>
                     <div>
-                        {projects.result.map(projectId => (
-                            <div key={projectId} onClick={this.setEditing(projectId)}>
-                                {projects.entities.projects[projectId].name}
-                            </div>
-                        ))}
+                        <ReactTable
+                            data={projects.result}
+                            columns={this.columns}
+                            showPageSizeOptions={false}
+                            defaultPageSize={10}
+                            previousText={'Précedent'}
+                            nextText={'Suivant'}
+                            loadingText={'Chargement'}
+                            noDataText='Aucun projet trouvé'
+                            pageText='Page'
+                            ofText='sur'
+                            rowsText='lignes'
+                            defaultSorted={[{
+                                id: 'name'
+                            }]}
+
+                            getTdProps={(state, rowInfo) => {
+                                return {
+                                    onClick: (e) => {
+                                        if (rowInfo) {
+                                            this.props.setEditing(rowInfo.original)(e)
+                                        }
+                                    }
+                                }
+                            }}
+                        />
                     </div>
-                    <button onClick={this.setEditing("new")}>Créer un projet</button>
                 </div>
             )
         } else {
