@@ -11,8 +11,11 @@ class Users extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            users: false
+            users: false,
+            editing: false,
         }
+
+        this.setEditing = this.setEditing.bind(this)
         this.reloadUsers = this.reloadUsers.bind(this)
     }
 
@@ -31,39 +34,6 @@ class Users extends React.Component {
         })
     }
 
-    render() {
-        return (
-            <div className={"content"}>
-                <div className="content__header">
-                    <UsersHeader/>
-                </div>
-                <div className="content__inner">
-                    <UsersCRUD
-                        users={this.state.users}
-                        jobs={this.state.jobs}
-                        reloadUsers={this.reloadUsers}/>
-                </div>
-            </div>
-        )
-    }
-}
-
-
-const UsersHeader = () => {
-    return (
-        <h1 style={{margin: 0}}>Utilisateurs</h1>
-    )
-}
-
-class UsersCRUD extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            editing: false
-        }
-        this.setEditing = this.setEditing.bind(this)
-    }
-
     setEditing(id) {
         return (e) => {
             this.setState({editing: false})
@@ -71,7 +41,7 @@ class UsersCRUD extends React.Component {
                 this.setState({editing: id})
             }, 1)
             if (!id) {
-                this.props.reloadUsers()
+                this.reloadUsers()
             }
             if (e) {
                 e.stopPropagation()
@@ -79,18 +49,49 @@ class UsersCRUD extends React.Component {
         }
     }
 
+    render() {
+        return (
+            <div className={"content"}>
+                <div className="content__header">
+                    <UsersHeader setEditing={this.setEditing}/>
+                </div>
+                <div className="content__inner">
+                    <UsersCRUD
+                        users={this.state.users}
+                        jobs={this.state.jobs}
+                        reloadUsers={this.reloadUsers}
+                        setEditing={this.setEditing}
+                        editing={this.state.editing}/>
+                </div>
+            </div>
+        )
+    }
+}
+
+
+const UsersHeader = props => {
+    return (
+        <div>
+            <h1 style={{margin: 0}}>Utilisateurs</h1>
+            <button onClick={props.setEditing("new")}>Créer un utilisateur</button>
+        </div>
+    )
+}
+
+class UsersCRUD extends React.Component {
+
     columns = [{
         id: "email",
         Header: 'Email',
-        accessor: id => this.props.users.entities.users[id].email
-    }, {
-        id: "firstname",
-        Header: 'Prénom',
-        accessor: id => this.props.users.entities.users[id].firstname
+        accessor: id => this.props.users.entities.users[id].email,
     }, {
         id: "lastname",
         Header: 'Nom',
         accessor: id => this.props.users.entities.users[id].lastname,
+    }, {
+        id: "firstname",
+        Header: 'Prénom',
+        accessor: id => this.props.users.entities.users[id].firstname
     }, {
         id: "job",
         Header: 'Rôle',
@@ -104,17 +105,16 @@ class UsersCRUD extends React.Component {
             return (
                 <div>
                     <div>
-                        {this.state.editing
+                        {this.props.editing
                             ? <UsersForm
                                 users={users}
                                 jobs={jobs}
-                                editing={this.state.editing}
-                                setEditing={this.setEditing}/>
+                                editing={this.props.editing}
+                                setEditing={this.props.setEditing}/>
                             : ""
                         }
                     </div>
                     <div>
-                        {/*onClick={this.setEditing(userId)*/}
                         <ReactTable
                             data={users.result}
                             columns={this.columns}
@@ -127,18 +127,21 @@ class UsersCRUD extends React.Component {
                             pageText='Page'
                             ofText='sur'
                             rowsText='lignes'
+                            defaultSorted={[{
+                                id: 'lastname'
+                            }]}
+
                             getTdProps={(state, rowInfo) => {
                                 return {
                                     onClick: (e) => {
                                         if (rowInfo) {
-                                            this.setEditing(rowInfo.original)(e)
+                                            this.props.setEditing(rowInfo.original)(e)
                                         }
                                     }
                                 }
                             }}
                         />
                     </div>
-                    <button onClick={this.setEditing("new")}>Créer un utilisateur</button>
                 </div>
             )
         } else {

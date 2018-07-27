@@ -171,6 +171,7 @@ class UsersForm extends React.Component {
                 }
             })
         } else {
+
             if (changed.plainPassword) {
                 apiHelpers.apiPost("users", changed).then(response => {
                     if (response.status === 201) {
