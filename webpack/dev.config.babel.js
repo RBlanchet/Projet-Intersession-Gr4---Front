@@ -22,9 +22,9 @@ const plugins = [
     new CopyPlugin([
         {from: 'source/images', to: 'images'}
     ]),
-    // new CopyPlugin([
-    //     {from: 'assets/fonts', to: '../fonts'}
-    // ]),
+    new CopyPlugin([
+        {from: 'source/packages', to: 'packages'}
+    ]),
     // new CopyPlugin([
     //     {from: 'assets/files', to: '../files'}
     // ])

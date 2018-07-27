@@ -191,9 +191,7 @@ class UsersForm extends React.Component {
     deleteUser(id) {
         return () => {
             apiHelpers.apiDelete("users", id).then(response => {
-                console.log(response)
                 this.setEditing(false)()
-                // TODO: feedback
             })
         }
     }
