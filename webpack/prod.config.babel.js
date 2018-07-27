@@ -53,6 +53,9 @@ const plugins = [
     new CopyPlugin([
         {from: 'source/images', to: 'images'}
     ]),
+    new CopyPlugin([
+        {from: 'source/packages', to: 'packages'}
+    ]),
 ]
 
 module.exports = require('./base.config.babel')({
