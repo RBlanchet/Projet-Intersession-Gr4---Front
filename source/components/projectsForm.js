@@ -254,7 +254,6 @@ class ProjectsForm extends React.Component {
     deleteProject(id) {
         return () => {
             apiHelpers.apiDelete("projects", id).then(response => {
-                console.log(response)
                 this.setEditing(false)()
                 // TODO: feedback
             })
@@ -269,7 +268,6 @@ class ProjectsForm extends React.Component {
         } else {
             editingProject = this.props.projects.entities.projects[this.props.editing]
         }
-        console.log(editingProject)
         return (
             <div>
                 <Formik

@@ -26,9 +26,9 @@ class Nav extends React.Component {
                         <span className={"nav__item-text"}>Gestion des utilisateurs</span>
                     </Link>
                     <Link className={"nav__item"} to="/projects">
-                    <i className="fas fa-users nav__item-icon"/>
-                    <span className={"nav__item-text"}>Gestion des projets</span>
-                </Link>
+                        <i className="fas fa-users nav__item-icon"/>
+                        <span className={"nav__item-text"}>Gestion des projets</span>
+                    </Link>
                     <Link className={"nav__item"} to="/tasks">
                         <i className="fas fa-users nav__item-icon"/>
                         <span className={"nav__item-text"}>Gestion des taches</span>

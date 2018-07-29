@@ -2,7 +2,7 @@ import React from "react"
 import {string, object, ref} from 'yup'
 import {Formik} from 'formik'
 import {diff} from 'deep-object-diff'
-import apiHelpers from "../helpers/apiHelpers";
+import apiHelpers from "../helpers/apiHelpers"
 
 const Form = (props) => {
 
@@ -210,89 +210,93 @@ const Form = (props) => {
                 </button>
             </div>
         </div>
-                )
+    )
 
-                }
+}
 
-                class TasksForm extends React.Component {
+class TasksForm extends React.Component {
 
-                handleSubmit(values, {setSubmitting}) {
-                setTimeout(() => {
-                const changed = diff(this.initialValues, values)
-                console.log(apiHelpers.apiPatch("tasks/" + this.editing, values))
+    handleSubmit(values, {setSubmitting}) {
+        setTimeout(() => {
+            const changed = diff(this.initialValues, values)
+            apiHelpers.apiPatch("tasks/" + this.editing, changed).then(response => {
+
                 // alert(JSON.stringify(changed, null, 2))
                 setSubmitting(false)
-            }, 100)
-            }
-                    deleteTask(id) {
-                        return () => {
-                            apiHelpers.apiDelete("tasks", id).then(response => {
-                                console.log(response)
-                                this.setEditing(false)()
-                                // TODO: feedback
-                            })
-                        }
-                    }
-                render() {
+            })
+        }, 100)
+    }
 
-                let editingTask
-                if (this.props.editing === "new") {
-                editingTask = false
-            } else {
-                editingTask = this.props.tasks.entities.tasks[this.props.editing]
-            }
-                return (
-                <div>
+    deleteTask(id) {
+        return () => {
+            apiHelpers.apiDelete("tasks", id).then(response => {
+                console.log(response)
+                this.setEditing(false)()
+                // TODO: feedback?
+            })
+        }
+    }
+
+    render() {
+
+        let editingTask
+        if (this.props.editing === "new") {
+            editingTask = false
+        } else {
+            editingTask = this.props.tasks.entities.tasks[this.props.editing]
+        }
+        return (
+            <div>
                 <Formik
-                {...this.props}
-                validationSchema={
-                    object().shape({
-                        name: string()
-                            .required('Vous devez saisir un nom pour votre tache !'),
-                        description: string()
-                            .required('Vous devez saisir une description pour votre tâche !'),
-                        status: string()
-                            .required('Vous devez préciser un statut pour votre tâche !'),
-                        hour_start: string()
-                            .matches(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, "Votre date n'est pas au bon format"),
-                        date_start: string()
-                            .required('Vous devez saisir une date'),
-                        hour_end: string()
-                            .matches(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, "Votre date n'est pas au bon format"),
-                        date_end: string()
-                            .required('Vous devez saisir une date'),
-                        cost: string()
-                            .required('Le prix ne peut être négatif'),
-                        hour_pool: string()
-                            .matches(/^\d+$/, "Ce n'est pas un format d'heure valide"),
-                        hours_spend: string()
-                            .required('Le nombre d\'heures ne peut etre négatif'),
+                    {...this.props}
+                    validationSchema={
+                        object().shape({
+                            name: string()
+                                .required('Vous devez saisir un nom pour votre tache !'),
+                            description: string()
+                                .required('Vous devez saisir une description pour votre tâche !'),
+                            status: string()
+                                .required('Vous devez préciser un statut pour votre tâche !'),
+                            hour_start: string()
+                                .matches(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, "Votre date n'est pas au bon format"),
+                            date_start: string()
+                                .required('Vous devez saisir une date'),
+                            hour_end: string()
+                                .matches(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, "Votre date n'est pas au bon format"),
+                            date_end: string()
+                                .required('Vous devez saisir une date'),
+                            cost: string()
+                                .required('Le prix ne peut être négatif'),
+                            hour_pool: string()
+                                .matches(/^\d+$/, "Ce n'est pas un format d'heure valide"),
+                            hours_spend: string()
+                                .required('Le nombre d\'heures ne peut etre négatif'),
 
-                    })
-                }
-                onSubmit={this.handleSubmit}
-                initialValues={{
-                    name: editingTask.name,
-                    date_start: editingTask.date_start ? editingTask.date_start.substr(0, 10) : null,
-                    hour_start: editingTask.date_start ? editingTask.date_start.substr(11, 5) : null,
-                    date_end: editingTask.date_end ? editingTask.date_end.substr(0, 10) : null,
-                    hour_end: editingTask.date_end ? editingTask.date_end.substr(11, 5) : null,
-                    cost: editingTask.cost,
-                    hour_spend: editingTask.hour_spend,
-                    description: editingTask.description
-                }}
-                render={formikProps =>
-                    <Form {...formikProps} displayName={"UsersInnerForm"}
-                          setEditing={this.props.setEditing}
-                          editing={this.props.editing}
-                          deleteTask={this.deleteTask}/>
-                }
+                        })
+                    }
+                    onSubmit={this.handleSubmit}
+                    initialValues={{
+                        name: editingTask.name,
+                        date_start: editingTask.date_start ? editingTask.date_start.substr(0, 10) : null,
+                        hour_start: editingTask.date_start ? editingTask.date_start.substr(11, 5) : null,
+                        date_end: editingTask.date_end ? editingTask.date_end.substr(0, 10) : null,
+                        hour_end: editingTask.date_end ? editingTask.date_end.substr(11, 5) : null,
+                        cost: editingTask.cost,
+                        hour_spend: editingTask.hour_spend,
+                        description: editingTask.description
+                    }}
+                    render={formikProps =>
+                        <Form {...formikProps} displayName={"UsersInnerForm"}
+                              setEditing={this.props.setEditing}
+                              editing={this.props.editing}
+                              deleteTask={this.deleteTask}/>
+                    }
                 />
 
-                </div>
-                )
+            </div>
+        )
 
-            }
-            }
+    }
+}
 
-                export default TasksForm
+export default TasksForm
