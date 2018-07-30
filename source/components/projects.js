@@ -20,7 +20,7 @@ class Projects extends React.Component {
     }
 
     componentDidMount() {
-        apiHelpers.apiGet("projects").then((response) => {
+        apiHelpers.apiGet("users/7/projects").then((response) => {
             this.setState({projects: normalize(response.data, projectSchema)})
         })
         apiHelpers.apiGet("users").then((response) => {
