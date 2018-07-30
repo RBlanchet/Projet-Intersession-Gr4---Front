@@ -14,7 +14,7 @@ import Projects from "./components/projects"
 const Main = () => (
     <Router>
         <main className={"main"}>
-            <Nav/>
+            <Route component={Nav} path="/:foo+"/>
 
             <Route exact path="/" component={Login}/>
             <Route path="/reset-password" component={Login}/>
@@ -31,7 +31,6 @@ const Main = () => (
         </main>
     </Router>
 )
-
 
 const main = document.getElementById("main")
 

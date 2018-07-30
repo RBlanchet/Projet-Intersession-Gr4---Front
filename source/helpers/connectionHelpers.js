@@ -1,3 +1,6 @@
+import apiHelpers from "../helpers/apiHelpers"
+import {normalize} from "normalizr"
+import projectSchema from "../schemas/projects"
 const storage = window.localStorage
 
 function isAuthenticated() {
@@ -23,8 +26,15 @@ function loginUser(response) {
         const createdAt = Date.parse(response.headers.date)
         storage.setItem("Auth-Token", token)
         storage.setItem("Date", String(createdAt))
+        apiHelpers.apiGet("me").then((response) => {
+            storage.setItem("Job", String(response.data.job.id))
+        })
     }
     return isAuthenticated()
+}
+
+function getJob() {
+    return storage.getItem("Job")
 }
 
 function logoutUser() {
@@ -32,6 +42,7 @@ function logoutUser() {
 }
 
 function getUserInfo() {
+
     // if (cacheAge >= 60 * 60 * 1000) {
     //     reloadUserInfo()
     // }
@@ -45,7 +56,7 @@ function getUserInfo() {
     // } else {
     //     return false
     // }
-    return false
+    // return false
 }
 
 const connectionHelpers = {
@@ -53,6 +64,7 @@ const connectionHelpers = {
     "loginUser": loginUser,
     "getUserInfo": getUserInfo,
     "logoutUser": logoutUser,
+    "getJob": getJob
 }
 
 export default connectionHelpers

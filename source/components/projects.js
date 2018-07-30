@@ -14,6 +14,7 @@ class Projects extends React.Component {
         this.state = {
             projects: false,
             editing: false,
+            user: false,
         }
 
         this.setEditing = this.setEditing.bind(this)
@@ -21,17 +22,20 @@ class Projects extends React.Component {
     }
 
     componentDidMount() {
-        apiHelpers.apiGet("projects").then((response) => {
-            this.setState({projects: normalize(response.data, projectSchema)})
-        })
-        apiHelpers.apiGet("users").then((response) => {
-            this.setState({roles: normalize(response.data, [usersSchema])})
+        apiHelpers.apiGet("me").then((response) => {
+            this.setState({user: response.data})
+            apiHelpers.apiGet("users/" + response.data.id + "/projects").then((response) => {
+                this.setState({projects: normalize(response.data, projectSchema)})
+            })
         })
     }
 
     reloadProjects() {
-        apiHelpers.apiGet("projects").then((response) => {
-            this.setState({projects: normalize(response.data, projectSchema)})
+        apiHelpers.apiGet("me").then((response) => {
+            this.setState({user: response.data})
+            apiHelpers.apiGet("users/" + response.data.id + "/projects").then((response) => {
+                this.setState({projects: normalize(response.data, projectSchema)})
+            })
         })
     }
 
@@ -51,33 +55,47 @@ class Projects extends React.Component {
     }
 
     render() {
-        return (
-            <div className={"content"}>
-                <div className="content__header">
-                    <ProjectsHeader setEditing={this.setEditing}/>
+        if (this.state.user) {
+            return (
+                <div className={"content"}>
+                    <div className="content__header">
+                        <ProjectsHeader setEditing={this.setEditing} userJob={this.state.user.job.id}/>
+                    </div>
+                    <div className="content__inner">
+                        <ProjectsCRUD
+                            projects={this.state.projects}
+                            users={this.state.users}
+                            reloadProjects={this.reloadProjects}
+                            setEditing={this.setEditing}
+                            editing={this.state.editing}
+                            userJob={this.state.user.job.id}
+                        />
+                    </div>
                 </div>
-                <div className="content__inner">
-                    <ProjectsCRUD
-                        projects={this.state.projects}
-                        users={this.state.users}
-                        reloadProjects={this.reloadProjects}
-                        setEditing={this.setEditing}
-                        editing={this.state.editing}
-                    />
-                </div>
-            </div>
-        )
+            )
+        } else {
+            return 'Chargement ...'
+        }
+
     }
 }
 
 
 const ProjectsHeader = props => {
-    return (
-        <div>
-            <h1 style={{margin: 0}}>Projets</h1>
-            <button onClick={props.setEditing("new")}>Créer un projet</button>
-        </div>
-    )
+    if (props.userJob === 1 || props.userJob === 2) {
+        return (
+            <div>
+                <h1 style={{margin: 0}}>Mes projets</h1>
+                <button onClick={props.setEditing("new")}>Créer un projet</button>
+            </div>
+        )
+    } else {
+        return (
+            <div>
+                <h1 style={{margin: 0}}>Mes projets</h1>
+            </div>
+        )
+    }
 }
 
 class ProjectsCRUD extends React.Component {
@@ -112,6 +130,7 @@ class ProjectsCRUD extends React.Component {
 
     render() {
         const projects = this.props.projects
+        const userJob  = this.props.userJob
         if (projects.result) {
             return (
                 <div>
@@ -142,13 +161,17 @@ class ProjectsCRUD extends React.Component {
                             defaultSorted={[{
                                 id: 'name'
                             }]}
+
                             getTdProps={(state, rowInfo, cellInfo) => {
-                                return {
+                                if (userJob === 1 || userJob === 2) {return {
                                     onClick: (e) => {
                                         if (rowInfo && ["editUsers"].indexOf(cellInfo.id) === -1) {
-                                            this.props.setEditing(rowInfo.original)(e)
+                                                this.props.setEditing(rowInfo.original)(e)
+                                            }
                                         }
                                     }
+                                } else {
+                                    return false
                                 }
                             }}
                         />
