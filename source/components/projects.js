@@ -21,11 +21,11 @@ class Projects extends React.Component {
     }
 
     componentDidMount() {
-        apiHelpers.apiGet("users/7/projects").then((response) => {
+        apiHelpers.apiGet("projects").then((response) => {
             this.setState({projects: normalize(response.data, projectSchema)})
         })
         apiHelpers.apiGet("users").then((response) => {
-            this.setState({users: normalize(response.data, usersSchema)})
+            this.setState({roles: normalize(response.data, [usersSchema])})
         })
     }
 
@@ -142,11 +142,9 @@ class ProjectsCRUD extends React.Component {
                             defaultSorted={[{
                                 id: 'name'
                             }]}
-
                             getTdProps={(state, rowInfo, cellInfo) => {
                                 return {
                                     onClick: (e) => {
-                                        console.log(cellInfo)
                                         if (rowInfo && ["editUsers"].indexOf(cellInfo.id) === -1) {
                                             this.props.setEditing(rowInfo.original)(e)
                                         }
@@ -161,7 +159,6 @@ class ProjectsCRUD extends React.Component {
             return "Chargement... "
         }
     }
-
 }
 
 export default Projects

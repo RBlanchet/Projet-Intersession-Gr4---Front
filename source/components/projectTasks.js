@@ -25,7 +25,7 @@ class Tasks extends React.Component {
 
     reloadTasks() {
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/tasks`).then((response) => {
-            this.setState({users: normalize(response.data, taskSchema)})
+            this.setState({roles: normalize(response.data, taskSchema)})
         })
     }
 

@@ -9,5 +9,4 @@ const user = new schema.Entity("users", {
     job: job,
 })
 
-const usersSchema = [user]
-export default usersSchema
+export default user

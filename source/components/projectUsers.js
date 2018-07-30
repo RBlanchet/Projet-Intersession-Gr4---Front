@@ -1,36 +1,40 @@
 import React from "react"
-import UsersForm from "./usersForm"
-import {normalize} from 'normalizr'
-import ReactTable from 'react-table'
 import apiHelpers from "../helpers/apiHelpers"
-import usersSchema from "../schemas/users"
-import jobSchema from "../schemas/jobs"
+import {normalize} from "normalizr"
+import RolesForm from "./rolesForm"
+import ReactTable from "react-table"
+import {role, user, job} from "../schemas/schemas"
 
-
-class Users extends React.Component {
+class Roles extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            users: false,
+            roles: false,
             editing: false,
         }
 
         this.setEditing = this.setEditing.bind(this)
-        this.reloadUsers = this.reloadUsers.bind(this)
+        this.reloadRoles = this.reloadRoles.bind(this)
     }
 
     componentDidMount() {
-        apiHelpers.apiGet("users").then((response) => {
-            this.setState({users: normalize(response.data, [usersSchema])})
+        apiHelpers.apiGet(`projects/${this.props.match.params.id}/roles`).then((response) => {
+            this.setState({roles: normalize(response.data, [role])})
+            console.log("roles:", this.state.roles)
+        }).catch(e => console.log(e))
+        apiHelpers.apiGet(`users`).then((response) => {
+            this.setState({users: normalize(response.data, [user])})
+            console.log("users", this.state.users)
         })
-        apiHelpers.apiGet("jobs").then((response) => {
-            this.setState({jobs: normalize(response.data, jobSchema)})
+        apiHelpers.apiGet(`jobs`).then((response) => {
+            this.setState({jobs: normalize(response.data, [job])})
+            console.log("jobs", this.state.jobs)
         })
     }
 
-    reloadUsers() {
-        apiHelpers.apiGet("users").then((response) => {
-            this.setState({users: normalize(response.data, [usersSchema])})
+    reloadRoles() {
+        apiHelpers.apiGet(`projects/${this.props.match.params.id}/roles`).then((response) => {
+            this.setState({roles: normalize(response.data, [role])})
         })
     }
 
@@ -41,7 +45,7 @@ class Users extends React.Component {
                 this.setState({editing: id})
             }, 1)
             if (!id) {
-                this.reloadUsers()
+                this.reloadRoles()
             }
             if (e) {
                 e.stopPropagation()
@@ -53,15 +57,17 @@ class Users extends React.Component {
         return (
             <div className={"content"}>
                 <div className="content__header">
-                    <UsersHeader setEditing={this.setEditing}/>
+                    <RolesHeader setEditing={this.setEditing} projectId={this.props.match.params.id}/>
                 </div>
                 <div className="content__inner">
-                    <UsersCRUD
-                        users={this.state.users}
+                    <RolesCRUD
+                        roles={this.state.roles}
                         jobs={this.state.jobs}
-                        reloadUsers={this.reloadUsers}
+                        users={this.state.users}
+                        reloadRoles={this.reloadRoles}
                         setEditing={this.setEditing}
-                        editing={this.state.editing}/>
+                        editing={this.state.editing}
+                        projectId={this.props.match.params.id}/>
                 </div>
             </div>
         )
@@ -69,45 +75,49 @@ class Users extends React.Component {
 }
 
 
-const UsersHeader = props => {
+const RolesHeader = props => {
     return (
         <div>
-            <h1 style={{margin: 0}}>Utilisateurs</h1>
+            <h1 style={{margin: 0}}>Participants au projet id: {props.projectId}</h1>
             <button onClick={props.setEditing("new")}>Créer un utilisateur</button>
         </div>
     )
 }
 
-class UsersCRUD extends React.Component {
+class RolesCRUD extends React.Component {
 
     columns = [{
-        id: "email",
-        Header: 'Email',
-        accessor: id => this.props.users.entities.users[id].email,
-    }, {
-        id: "lastname",
+        id: "name",
         Header: 'Nom',
-        accessor: id => this.props.users.entities.users[id].lastname,
-    }, {
-        id: "firstname",
-        Header: 'Prénom',
-        accessor: id => this.props.users.entities.users[id].firstname
+        accessor: id => {
+            const user = this.props.roles.entities.users[this.props.roles.entities.roles[id].user]
+            return `${user.firstname} ${user.lastname}`
+        },
     }, {
         id: "job",
         Header: 'Rôle',
-        accessor: id => this.props.users.entities.jobs[this.props.users.entities.users[id].job].name,
+        accessor: id => {
+            const job = this.props.jobs.entities.jobs[this.props.roles.entities.roles[id].job]
+            return `${job.name}`
+        },
+    }, {
+        id: "cost",
+        Header: 'Coût horaire (en €)',
+        accessor: id => {
+            return `${this.props.roles.entities.roles[id].cost} €/h`
+        },
     }]
 
     render() {
-        const users = this.props.users
+        const roles = this.props.roles
         const jobs = this.props.jobs
-        if (users.result && jobs) {
+        if (roles && jobs) {
             return (
                 <div>
                     <div>
-                        {this.props.editing
-                            ? <UsersForm
-                                users={users}
+                        {this.props.editing && this.props.users
+                            ? <RolesForm
+                                roles={roles}
                                 jobs={jobs}
                                 editing={this.props.editing}
                                 setEditing={this.props.setEditing}/>
@@ -116,7 +126,7 @@ class UsersCRUD extends React.Component {
                     </div>
                     <div>
                         <ReactTable
-                            data={users.result}
+                            data={roles.result}
                             columns={this.columns}
                             showPageSizeOptions={false}
                             defaultPageSize={10}
@@ -152,4 +162,4 @@ class UsersCRUD extends React.Component {
 
 }
 
-export default Users
+export default Roles
