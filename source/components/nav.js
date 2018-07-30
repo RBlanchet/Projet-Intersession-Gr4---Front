@@ -1,6 +1,9 @@
 import React from "react"
 import {Link} from "react-router-dom"
 import connectionHelpers from "../helpers/connectionHelpers"
+import apiHelpers from "../helpers/apiHelpers"
+import {normalize} from "normalizr"
+import projectSchema from "../schemas/projects"
 
 function logout() {
     connectionHelpers.logoutUser()
@@ -11,38 +14,84 @@ function logout() {
 
 class Nav extends React.Component {
 
-    render() {
-        if (connectionHelpers.isAuthenticated()) {
+    constructor(props) {
+        super(props)
+        this.state = {
+            job: false,
+        }
+    }
 
-            return (
-                <div className={"nav"}>
-                    {/*<Link to="/">Connexion</Link>*/}
-                    <Link className={"nav__item"} to="/dashboard">
-                        <i className="fas fa-tachometer-alt nav__item-icon"/>
-                        <span className={"nav__item-text"}>Tableau de bord</span>
-                    </Link>
-                    <Link className={"nav__item"} to="/users">
-                        <i className="fas fa-users nav__item-icon"/>
-                        <span className={"nav__item-text"}>Gestion des utilisateurs</span>
-                    </Link>
-                    <Link className={"nav__item"} to="/projects">
-                        <i className="fas fa-users nav__item-icon"/>
-                        <span className={"nav__item-text"}>Gestion de mes projets</span>
-                    </Link>
-                    <Link className={"nav__item"} to="/tasks">
-                        <i className="fas fa-users nav__item-icon"/>
-                        <span className={"nav__item-text"}>Gestion des taches</span>
-                    </Link>
-                    <button className={"nav__item nav__item--last"} onClick={logout}>
-                        <i className="fas fa-times-circle fa-lg nav__item-icon"/>
-                        <span className={"nav__item-text"}>Se déconnecter</span>
-                    </button>
-                </div>
-            )
+    componentDidMount() {
+        apiHelpers.apiGet("me").then((response) => {
+            this.setState({job: response.data.job.id})
+        })
+    }
+
+    render() {
+        const userJob = this.state.job
+        console.log(userJob)
+        if (connectionHelpers.isAuthenticated()) {
+            if (this.state.job) {
+                if (userJob == 1 || userJob == 2) {
+                    return (
+                        <div className={"nav"}>
+                            {/*<Link to="/">Connexion</Link>*/}
+                            <Link className={"nav__item"} to="/dashboard">
+                                <i className="fas fa-tachometer-alt nav__item-icon"/>
+                                <span className={"nav__item-text"}>Tableau de bord</span>
+                            </Link>
+                            <Link className={"nav__item"} to="/users">
+                                <i className="fas fa-users nav__item-icon"/>
+                                <span className={"nav__item-text"}>Gestion des utilisateurs</span>
+                            </Link>
+                            <Link className={"nav__item"} to="/projects">
+                                <i className="fas fa-users nav__item-icon"/>
+                                <span className={"nav__item-text"}>Gestion de mes projets</span>
+                            </Link>
+                            <Link className={"nav__item"} to="/tasks">
+                                <i className="fas fa-users nav__item-icon"/>
+                                <span className={"nav__item-text"}>Gestion des taches</span>
+                            </Link>
+                            <button className={"nav__item nav__item--last"} onClick={logout}>
+                                <i className="fas fa-times-circle fa-lg nav__item-icon"/>
+                                <span className={"nav__item-text"}>Se déconnecter</span>
+                            </button>
+                        </div>
+                    )
+                } else {
+                    return (
+                        <div className={"nav"}>
+                            {/*<Link to="/">Connexion</Link>*/}
+                            <Link className={"nav__item"} to="/dashboard">
+                                <i className="fas fa-tachometer-alt nav__item-icon"/>
+                                <span className={"nav__item-text"}>Tableau de bord</span>
+                            </Link>
+                            <Link className={"nav__item"} to="/projects">
+                                <i className="fas fa-users nav__item-icon"/>
+                                <span className={"nav__item-text"}>Gestion de mes projets</span>
+                            </Link>
+                            <Link className={"nav__item"} to="/tasks">
+                                <i className="fas fa-users nav__item-icon"/>
+                                <span className={"nav__item-text"}>Gestion des taches</span>
+                            </Link>
+                            <button className={"nav__item nav__item--last"} onClick={logout}>
+                                <i className="fas fa-times-circle fa-lg nav__item-icon"/>
+                                <span className={"nav__item-text"}>Se déconnecter</span>
+                            </button>
+                        </div>
+                    )
+                }
+            } else {
+                return (
+                    <div className={"nav"}>
+                        <div>Chargement ...</div>
+                    </div>
+                )
+            }
+
         } else {
-            return (<div className={"nav"}/>)
+            return ('')
         }
     }
 }
-
 export default Nav

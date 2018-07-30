@@ -6,6 +6,7 @@ import apiHelpers from "../helpers/apiHelpers"
 
 const Form = (props) => {
     const jobs = props.jobs
+    console.log(props.isSubmitting)
     return (
         <div className={"form-modal__overlay"} onClick={props.setEditing(false)}>
             <div className={"form-modal"} onClick={(e) => {
@@ -191,9 +192,7 @@ class UsersForm extends React.Component {
     deleteUser(id) {
         return () => {
             apiHelpers.apiDelete("users", id).then(response => {
-                console.log(response)
                 this.setEditing(false)()
-                // TODO: feedback
             })
         }
     }

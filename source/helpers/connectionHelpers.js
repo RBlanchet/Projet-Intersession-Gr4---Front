@@ -26,8 +26,15 @@ function loginUser(response) {
         const createdAt = Date.parse(response.headers.date)
         storage.setItem("Auth-Token", token)
         storage.setItem("Date", String(createdAt))
+        apiHelpers.apiGet("me").then((response) => {
+            storage.setItem("Job", String(response.data.job.id))
+        })
     }
     return isAuthenticated()
+}
+
+function getJob() {
+    return storage.getItem("Job")
 }
 
 function logoutUser() {
@@ -57,6 +64,7 @@ const connectionHelpers = {
     "loginUser": loginUser,
     "getUserInfo": getUserInfo,
     "logoutUser": logoutUser,
+    "getJob": getJob
 }
 
 export default connectionHelpers

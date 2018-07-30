@@ -18,44 +18,47 @@ class Login extends React.Component {
             )
         } else {
             return (
-                <form onSubmit={this.props.handleSubmit}>
-                    <label htmlFor="login" style={{display: 'block'}}>
-                        Email
-                    </label>
-                    <input
-                        id="login"
-                        placeholder="jean.dupont@example.com"
-                        type="text"
-                        value={this.props.values.login}
-                        onChange={this.props.handleChange}
-                        onBlur={this.props.handleBlur}
-                        className={this.props.errors.login && this.props.touched.login ? 'text-input error' : 'text-input'}
-                    />
-                    {this.props.errors.login &&
-                    this.props.touched.login && <div className="input-feedback">{this.props.errors.login}</div>}
+                <div className="login-card">
+                    <h1 className="login-card__title">
+                        Se connecter
+                    </h1>
+                    <form onSubmit={this.props.handleSubmit} className="form">
+                        {/*<label htmlFor="login" style={{display: 'block'}}>*/}
+                            {/*Email*/}
+                        {/*</label>*/}
+                        {this.props.errors.login &&
+                        this.props.touched.login && <div className="input-feedback">{this.props.errors.login}</div>}
+                        <input
+                            id="login"
+                            placeholder="jean.dupont@example.com"
+                            type="text"
+                            value={this.props.values.login}
+                            onChange={this.props.handleChange}
+                            onBlur={this.props.handleBlur}
+                            className={this.props.errors.login && this.props.touched.login ? 'form__input-block-login form__input-block-login--hover form__input-block-login--error' : 'text-input' && 'form__input-block-login form__input-block-login--hover'}
+                        />
+                        {/*<label htmlFor="password" style={{display: 'block'}}>*/}
+                            {/*Mot de passe*/}
+                        {/*</label>*/}
+                        {this.props.errors.password &&
+                        this.props.touched.password && <div className="input-feedback">{this.props.errors.password}</div>}
+                        <input
+                            id="password"
+                            placeholder="********"
+                            type="password"
+                            value={this.props.values.password}
+                            onChange={this.props.handleChange}
+                            onBlur={this.props.handleBlur}
+                            className={this.props.errors.password && this.props.touched.password ? 'form__input-block-login form__input-block-login--hover form__input-block-login--error' : 'text-input' && 'form__input-block-login form__input-block-login--hover'}
+                        />
 
+                        <button type="submit" disabled={this.props.isSubmitting} className="form__submit form__submit--hover">
+                            Go!
+                        </button>
 
-                    <label htmlFor="password" style={{display: 'block'}}>
-                        Mot de passe
-                    </label>
-                    <input
-                        id="password"
-                        placeholder="********"
-                        type="password"
-                        value={this.props.values.password}
-                        onChange={this.props.handleChange}
-                        onBlur={this.props.handleBlur}
-                        className={this.props.errors.password && this.props.touched.password ? 'text-input error' : 'text-input'}
-                    />
-                    {this.props.errors.password &&
-                    this.props.touched.password && <div className="input-feedback">{this.props.errors.password}</div>}
-
-                    <button type="submit" disabled={this.props.isSubmitting}>
-                        Go!
-                    </button>
-
-                    <Link to="/reset-password">Mot de passe oublié?</Link>
-                </form>
+                        <Link to="/reset-password">Mot de passe oublié?</Link>
+                    </form>
+                </div>
             )
         }
     }
@@ -74,6 +77,7 @@ const LoginForm = withFormik({
 
             setSubmitting(false)
             if (connectionHelpers.loginUser(response)) {
+                console.log(window.localStorage.getItem('Job'))
                 window.location += "dashboard"
             } else {
                 // TODO: error feedback

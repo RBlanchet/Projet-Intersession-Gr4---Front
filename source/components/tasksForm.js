@@ -2,7 +2,7 @@ import React from "react"
 import {string, object, ref} from 'yup'
 import {Formik} from 'formik'
 import {diff} from 'deep-object-diff'
-import apiHelpers from "../helpers/apiHelpers";
+import apiHelpers from "../helpers/apiHelpers"
 
 const Form = (props) => {
 
@@ -224,6 +224,8 @@ class TasksForm extends React.Component {
                                 .required('Vous devez saisir une date'),
                             cost: string()
                                 .required('Le prix ne peut être négatif'),
+
+
                         })
                     }
                     onSubmit={this.handleSubmit}
@@ -231,6 +233,7 @@ class TasksForm extends React.Component {
                         name: editingTask.name,
                         start_at: editingTask.start_at ? editingTask.start_at.substr(0, 10) : null,
                         end_at: editingTask.end_at ? editingTask.end_at.substr(0, 10) : null,
+
                         cost: editingTask.cost,
                         time_spend: editingTask.hour_spend,
                         description: editingTask.description,

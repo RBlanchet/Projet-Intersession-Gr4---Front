@@ -5,7 +5,7 @@ import projectSchema from "../schemas/projects"
 import ProjectsForm from "./projectsForm"
 import usersSchema from "../schemas/users"
 import ReactTable from "react-table"
-import connectionHelpers from "../helpers/connectionHelpers"
+import {Link} from "react-router-dom"
 
 
 class Projects extends React.Component {
@@ -100,8 +100,7 @@ const ProjectsHeader = props => {
 
 class ProjectsCRUD extends React.Component {
 
-    columns = [
-    {
+    columns = [{
         id: "name",
         Header: 'Nom',
         accessor: id => this.props.projects.entities.projects[id].name
@@ -113,6 +112,20 @@ class ProjectsCRUD extends React.Component {
         id: "date_end",
         Header: 'Date de fin',
         accessor: id => this.props.projects.entities.projects[id].date_end.substr(0, 10) + ' ' + this.props.projects.entities.projects[id].date_end.substr(11, 5) + ':00'
+    }, {
+        id: "editUsers",
+        Header: 'Utilisateurs',
+        accessor: id => <Link to={`/projects/${id}/users`}>
+            <i className="fas fa-users nav__item-icon"/>
+            <span className={"nav__item-text"}>Gestion des utilisateurs</span>
+        </Link>
+    }, {
+        id: "editTasks",
+        Header: 'Tâches',
+        accessor: id => <Link to={`/projects/${id}/tasks`}>
+            <i className="fas fa-users nav__item-icon"/>
+            <span className={"nav__item-text"}>Gestion des tâches</span>
+        </Link>
     }]
 
     render() {
@@ -149,11 +162,12 @@ class ProjectsCRUD extends React.Component {
                                 id: 'name'
                             }]}
 
-                            getTdProps={(state, rowInfo) => {
+                            getTdProps={(state, rowInfo, cellInfo) => {
                                 if (userJob == 1 || userJob == 2) {
                                     return {
                                         onClick: (e) => {
-                                            if (rowInfo) {
+                                            console.log(cellInfo)
+                                        if (rowInfo && ["editUsers"].indexOf(cellInfo.id) === -1) {
                                                 this.props.setEditing(rowInfo.original)(e)
                                             }
                                         }
@@ -161,7 +175,6 @@ class ProjectsCRUD extends React.Component {
                                 } else {
                                     return false
                                 }
-
                             }}
                         />
                     </div>
