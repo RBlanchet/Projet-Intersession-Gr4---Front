@@ -1,3 +1,6 @@
+import apiHelpers from "../helpers/apiHelpers"
+import {normalize} from "normalizr"
+import projectSchema from "../schemas/projects"
 const storage = window.localStorage
 
 function isAuthenticated() {
@@ -32,6 +35,7 @@ function logoutUser() {
 }
 
 function getUserInfo() {
+
     // if (cacheAge >= 60 * 60 * 1000) {
     //     reloadUserInfo()
     // }
@@ -45,7 +49,7 @@ function getUserInfo() {
     // } else {
     //     return false
     // }
-    return false
+    // return false
 }
 
 const connectionHelpers = {

@@ -5,6 +5,7 @@ import projectSchema from "../schemas/projects"
 import ProjectsForm from "./projectsForm"
 import usersSchema from "../schemas/users"
 import ReactTable from "react-table"
+import connectionHelpers from "../helpers/connectionHelpers"
 
 
 class Projects extends React.Component {
@@ -13,24 +14,28 @@ class Projects extends React.Component {
         this.state = {
             projects: false,
             editing: false,
+            user: false,
         }
-
         this.setEditing = this.setEditing.bind(this)
         this.reloadProjects = this.reloadProjects.bind(this)
     }
 
+
     componentDidMount() {
-        apiHelpers.apiGet("users/7/projects").then((response) => {
-            this.setState({projects: normalize(response.data, projectSchema)})
-        })
-        apiHelpers.apiGet("users").then((response) => {
-            this.setState({users: normalize(response.data, usersSchema)})
+        apiHelpers.apiGet("me").then((response) => {
+            this.setState({user: response.data})
+            apiHelpers.apiGet("users/" + response.data.id + "/projects").then((response) => {
+                this.setState({projects: normalize(response.data, projectSchema)})
+            })
         })
     }
 
     reloadProjects() {
-        apiHelpers.apiGet("projects").then((response) => {
-            this.setState({projects: normalize(response.data, projectSchema)})
+        apiHelpers.apiGet("me").then((response) => {
+            this.setState({user: response.data})
+            apiHelpers.apiGet("users/" + response.data.id + "/projects").then((response) => {
+                this.setState({projects: normalize(response.data, projectSchema)})
+            })
         })
     }
 
@@ -50,38 +55,53 @@ class Projects extends React.Component {
     }
 
     render() {
-        return (
-            <div className={"content"}>
-                <div className="content__header">
-                    <ProjectsHeader setEditing={this.setEditing}/>
+        if (this.state.user) {
+            return (
+                <div className={"content"}>
+                    <div className="content__header">
+                        <ProjectsHeader setEditing={this.setEditing} userJob={this.state.user.job.id}/>
+                    </div>
+                    <div className="content__inner">
+                        <ProjectsCRUD
+                            projects={this.state.projects}
+                            users={this.state.users}
+                            reloadProjects={this.reloadProjects}
+                            setEditing={this.setEditing}
+                            editing={this.state.editing}
+                            userJob={this.state.user.job.id}
+                        />
+                    </div>
                 </div>
-                <div className="content__inner">
-                    <ProjectsCRUD
-                        projects={this.state.projects}
-                        users={this.state.users}
-                        reloadProjects={this.reloadProjects}
-                        setEditing={this.setEditing}
-                        editing={this.state.editing}
-                    />
-                </div>
-            </div>
-        )
+            )
+        } else {
+            return 'Chargement ...'
+        }
+
     }
 }
 
 
 const ProjectsHeader = props => {
-    return (
-        <div>
-            <h1 style={{margin: 0}}>Projets</h1>
-            <button onClick={props.setEditing("new")}>Créer un projet</button>
-        </div>
-    )
+    if (props.userJob == 1 || props.userJob == 2) {
+        return (
+            <div>
+                <h1 style={{margin: 0}}>Mes projets</h1>
+                <button onClick={props.setEditing("new")}>Créer un projet</button>
+            </div>
+        )
+    } else {
+        return (
+            <div>
+                <h1 style={{margin: 0}}>Mes projets</h1>
+            </div>
+        )
+    }
 }
 
 class ProjectsCRUD extends React.Component {
 
-    columns = [{
+    columns = [
+    {
         id: "name",
         Header: 'Nom',
         accessor: id => this.props.projects.entities.projects[id].name
@@ -97,6 +117,7 @@ class ProjectsCRUD extends React.Component {
 
     render() {
         const projects = this.props.projects
+        const userJob  = this.props.userJob
         if (projects.result) {
             return (
                 <div>
@@ -129,13 +150,18 @@ class ProjectsCRUD extends React.Component {
                             }]}
 
                             getTdProps={(state, rowInfo) => {
-                                return {
-                                    onClick: (e) => {
-                                        if (rowInfo) {
-                                            this.props.setEditing(rowInfo.original)(e)
+                                if (userJob == 1 || userJob == 2) {
+                                    return {
+                                        onClick: (e) => {
+                                            if (rowInfo) {
+                                                this.props.setEditing(rowInfo.original)(e)
+                                            }
                                         }
                                     }
+                                } else {
+                                    return false
                                 }
+
                             }}
                         />
                     </div>
