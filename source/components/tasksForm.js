@@ -182,7 +182,11 @@ class TasksForm extends React.Component {
     handleSubmit(values, {setSubmitting}) {
         setTimeout(() => {
             const changed = diff(this.initialValues, values)
-            console.log(apiHelpers.apiPatch("tasks/" + this.editing, values))
+            if (this.editing == 'new') {
+                apiHelpers.apiPatch("tasks", values)
+            } else {
+                apiHelpers.apiPatch("tasks/" + this.editing, values)
+            }
             // alert(JSON.stringify(changed, null, 2))
             setSubmitting(false)
         }, 100)

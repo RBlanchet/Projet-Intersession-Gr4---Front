@@ -84,18 +84,31 @@ class Projects extends React.Component {
 const ProjectsHeader = props => {
     if (props.userJob === 1 || props.userJob === 2) {
         return (
-            <div>
-                <h1 style={{margin: 0}}>Mes projets</h1>
-                <button onClick={props.setEditing("new")}>Créer un projet</button>
+            <div className="content__header--space">
+                <h1 className="content__header--title" style={{margin: 0}}>Mes projets</h1>
+                <button className="content__header--button" onClick={props.setEditing("new")}><i
+                    className="fas fa-plus"></i></button>
             </div>
         )
     } else {
         return (
-            <div>
-                <h1 style={{margin: 0}}>Mes projets</h1>
+            <div className="content__header--space">
+                <h1 className="content__header--title" style={{margin: 0}}>Mes projets</h1>
             </div>
         )
     }
+}
+
+const Loading = props => {
+    return (
+        <div className="loader">
+            <svg className="loader__circular">
+                <circle className="loader__circular--path" cx="50" cy="50" r="15" fill="none"
+                        strokeWidth="2" strokeMiterlimit="10">
+                </circle>
+            </svg>
+        </div>
+    )
 }
 
 class ProjectsCRUD extends React.Component {
@@ -108,12 +121,12 @@ class ProjectsCRUD extends React.Component {
         id: "date_start",
         Header: 'Date de début',
         accessor: id => `${this.props.projects.entities.projects[id].date_start.substr(0, 10)}`
-         // ${this.props.projects.entities.projects[id].date_start.substr(11, 5)}:00
+        // ${this.props.projects.entities.projects[id].date_start.substr(11, 5)}:00
     }, {
         id: "date_end",
         Header: 'Date de fin',
         accessor: id => `${this.props.projects.entities.projects[id].date_end.substr(0, 10)}`
-         // ${this.props.projects.entities.projects[id].date_end.substr(11, 5)}:00
+        // ${this.props.projects.entities.projects[id].date_end.substr(11, 5)}:00
     }, {
         id: "price",
         Header: 'Prix',
@@ -121,17 +134,19 @@ class ProjectsCRUD extends React.Component {
     }, {
         id: "editUsers",
         Header: 'Utilisateurs',
-        accessor: id => <Link to={`/projects/${id}/users`}>
-            <i className="fas fa-users nav__item-icon"/>
-            <span className={"nav__item-text"}>Gestion des utilisateurs</span>
-        </Link>
+        accessor: id =>
+            <Link to={`/projects/${id}/users`} className="nav__item-link">
+                <i className="fas fa-users nav__item-icon"/>
+                <span className={"nav__item-text"}>Gestion des utilisateurs</span>
+            </Link>
     }, {
         id: "editTasks",
         Header: 'Tâches',
-        accessor: id => <Link to={`/projects/${id}/tasks`}>
-            <i className="fas fa-users nav__item-icon"/>
-            <span className={"nav__item-text"}>Gestion des tâches</span>
-        </Link>
+        accessor: id =>
+            <Link to={`/projects/${id}/tasks`} className="nav__item-link">
+                <i className="fas fa-users nav__item-icon"/>
+                <span className={"nav__item-text"}>Gestion des tâches</span>
+            </Link>
     }]
 
     render() {
@@ -139,7 +154,7 @@ class ProjectsCRUD extends React.Component {
         const userJob = this.props.userJob
         if (projects.result) {
             return (
-                <div>
+                <div className="react-table">
                     <div>
                         {
                             this.props.editing
@@ -152,41 +167,62 @@ class ProjectsCRUD extends React.Component {
                         }
                     </div>
                     <div>
-                        <ReactTable
-                            data={projects.result}
-                            columns={this.columns}
-                            showPageSizeOptions={false}
-                            defaultPageSize={10}
-                            previousText={'Précedent'}
-                            nextText={'Suivant'}
-                            loadingText={'Chargement'}
-                            noDataText='Aucun projet trouvé'
-                            pageText='Page'
-                            ofText='sur'
-                            rowsText='lignes'
-                            defaultSorted={[{
-                                id: 'name'
-                            }]}
+                        <div className="row">
+                            <div className="row__col-100">
+                                <div className="card card__lg">
+                                    <div className="content__inner">
+                                        <ReactTable
+                                            data={projects.result}
+                                            columns={this.columns}
+                                            showPageSizeOptions={false}
+                                            defaultPageSize={10}
+                                            previousText={<i className="fas fa-chevron-left"></i>}
+                                            nextText={<i className="fas fa-chevron-right"></i>}
+                                            loadingText={'Chargement'}
+                                            noDataText='Aucun projet trouvé'
+                                            pageText='Page'
+                                            ofText='sur'
+                                            rowsText='lignes'
+                                            defaultSorted={[{
+                                                id: 'name'
+                                            }]}
 
-                            getTdProps={(state, rowInfo, cellInfo) => {
-                                if (userJob === 1 || userJob === 2) {
-                                    return {
-                                        onClick: (e) => {
-                                            if (rowInfo && ["editUsers"].indexOf(cellInfo.id) === -1) {
-                                                this.props.setEditing(rowInfo.original)(e)
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    return false
-                                }
-                            }}
-                        />
+                                            getTdProps={(state, rowInfo, cellInfo) => {
+                                                if (userJob === 1 || userJob === 2) {
+                                                    return {
+                                                        onClick: (e) => {
+                                                            if (rowInfo && ["editUsers"].indexOf(cellInfo.id) === -1) {
+                                                                this.props.setEditing(rowInfo.original)(e)
+                                                            }
+                                                        }
+                                                    }
+                                                } else {
+                                                    return false
+                                                }
+                                            }}/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )
         } else {
-            return "Chargement... "
+            return (
+                <div className="react-table">
+                    <div>
+                        <div className="row">
+                            <div className="row__col-100">
+                                <div className="card card__lg">
+                                    <div className="content__inner">
+                                        <Loading/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
         }
     }
 }

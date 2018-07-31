@@ -5,6 +5,7 @@ import ReactTable from 'react-table'
 import apiHelpers from "../helpers/apiHelpers"
 import usersSchema from "../schemas/users"
 import jobSchema from "../schemas/jobs"
+import connectionHelpers from "../helpers/connectionHelpers"
 
 
 class Users extends React.Component {
@@ -14,7 +15,7 @@ class Users extends React.Component {
             users: false,
             editing: false,
         }
-
+        console.log(connectionHelpers.isAuthenticated())
         this.setEditing = this.setEditing.bind(this)
         this.reloadUsers = this.reloadUsers.bind(this)
     }
@@ -55,14 +56,13 @@ class Users extends React.Component {
                 <div className="content__header">
                     <UsersHeader setEditing={this.setEditing}/>
                 </div>
-                <div className="content__inner">
-                    <UsersCRUD
-                        users={this.state.users}
-                        jobs={this.state.jobs}
-                        reloadUsers={this.reloadUsers}
-                        setEditing={this.setEditing}
-                        editing={this.state.editing}/>
-                </div>
+                <UsersCRUD
+                    users={this.state.users}
+                    jobs={this.state.jobs}
+                    reloadUsers={this.reloadUsers}
+                    setEditing={this.setEditing}
+                    editing={this.state.editing}
+                />
             </div>
         )
     }
@@ -71,9 +71,21 @@ class Users extends React.Component {
 
 const UsersHeader = props => {
     return (
-        <div>
-            <h1 style={{margin: 0}}>Utilisateurs</h1>
-            <button onClick={props.setEditing("new")}>Créer un utilisateur</button>
+        <div className="content__header--space">
+            <h1 className="content__header--title" style={{margin: 0}}>Utilisateurs</h1>
+            <button className="content__header--button" onClick={props.setEditing("new")}><i className="fas fa-plus"></i></button>
+        </div>
+    )
+}
+
+const Loading = props => {
+    return (
+        <div className="loader">
+            <svg className="loader__circular">
+                <circle className="loader__circular--path" cx="50" cy="50" r="15" fill="none"
+                        strokeWidth="2" strokeMiterlimit="10">
+                </circle>
+            </svg>
         </div>
     )
 }
@@ -103,7 +115,7 @@ class UsersCRUD extends React.Component {
         const jobs = this.props.jobs
         if (users.result && jobs) {
             return (
-                <div>
+                <div className="react-table">
                     <div>
                         {this.props.editing
                             ? <UsersForm
@@ -115,37 +127,59 @@ class UsersCRUD extends React.Component {
                         }
                     </div>
                     <div>
-                        <ReactTable
-                            data={users.result}
-                            columns={this.columns}
-                            showPageSizeOptions={false}
-                            defaultPageSize={10}
-                            previousText={'Précedent'}
-                            nextText={'Suivant'}
-                            loadingText={'Chargement'}
-                            noDataText='Aucun utilisateur trouvé'
-                            pageText='Page'
-                            ofText='sur'
-                            rowsText='lignes'
-                            defaultSorted={[{
-                                id: 'lastname'
-                            }]}
+                        <div className="row">
+                            <div className="row__col-100">
+                                <div className="card card__lg">
+                                    <div className="content__inner">
+                                        <ReactTable
+                                            data={users.result}
+                                            columns={this.columns}
+                                            showPageSizeOptions={false}
+                                            defaultPageSize={10}
+                                            previousText={<i className="fas fa-chevron-left"></i>}
+                                            nextText={<i className="fas fa-chevron-right"></i>}
+                                            loadingText={'Chargement'}
+                                            noDataText='Aucun utilisateur trouvé'
+                                            pageText='Page'
+                                            ofText='sur'
+                                            rowsText='lignes'
+                                            defaultSorted={[{
+                                                id: 'lastname'
+                                            }]}
 
-                            getTdProps={(state, rowInfo) => {
-                                return {
-                                    onClick: (e) => {
-                                        if (rowInfo) {
-                                            this.props.setEditing(rowInfo.original)(e)
-                                        }
-                                    }
-                                }
-                            }}
-                        />
+                                            getTdProps={(state, rowInfo) => {
+                                                return {
+                                                    onClick: (e) => {
+                                                        if (rowInfo) {
+                                                            this.props.setEditing(rowInfo.original)(e)
+                                                        }
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )
         } else {
-            return "Chargement... "
+            return (
+                <div className="react-table">
+                    <div>
+                        <div className="row">
+                            <div className="row__col-100">
+                                <div className="card card__lg">
+                                    <div className="content__inner">
+                                        <Loading/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
         }
     }
 

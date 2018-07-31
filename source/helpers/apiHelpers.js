@@ -25,10 +25,10 @@ function getHeaders() {
     }
 }
 
-async function withoutPayload(method, endpoint, id = "") {
+function withoutPayload(method, endpoint, id = "") {
     const url = getUrl(endpoint, id)
     try {
-        return await axios({
+        return axios({
             method: method,
             url: url,
             headers: getHeaders()
@@ -69,7 +69,7 @@ function apiPatch(endpoint, payload, id = "") {
     return withPayload("patch", endpoint, payload, id)
 }
 
-async function withPayload(method, endpoint, payload, id) {
+function withPayload(method, endpoint, payload, id) {
     if (!["post", "put", "patch"].includes(method)) {
         throw error(`Incorrect method ${method} for use in withPayload`)
     }
@@ -77,7 +77,7 @@ async function withPayload(method, endpoint, payload, id) {
     const url = getUrl(endpoint, id)
 
     try {
-        return await axios({
+        return axios({
             method: method,
             url: url,
             data: JSON.stringify(payload),

@@ -10,6 +10,19 @@ function logout() {
     window.location = url
 }
 
+
+const Loading = props => {
+    return (
+        <div className="loader">
+            <svg className="loader__circular">
+                <circle className="loader__circular--path" cx="50" cy="50" r="15" fill="none"
+                        strokeWidth="2" strokeMiterlimit="10">
+                </circle>
+            </svg>
+        </div>
+    )
+}
+
 class Nav extends React.Component {
 
     constructor(props) {
@@ -80,7 +93,7 @@ class Nav extends React.Component {
             } else {
                 return (
                     <div className={"nav"}>
-                        <div>Chargement ...</div>
+                        <Loading/>
                     </div>
                 )
             }
