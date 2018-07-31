@@ -8,7 +8,7 @@ import Users from "./components/users"
 import ProjectTasks from "./components/projectTasks"
 import ProjectUsers from "./components/projectUsers"
 import Tasks from "./components/tasks"
-import Dashboard from "./components/dashboard"
+import ProjectGantt from "./components/projectGantt"
 import Projects from "./components/projects"
 
 const Main = () => (
@@ -24,10 +24,11 @@ const Main = () => (
             <Route exact path="/projects" component={Projects}/>
             <Route path="/projects/:id/tasks" component={ProjectTasks}/>
             <Route path="/projects/:id/users" component={ProjectUsers}/>
+            <Route path="/projects/:id/gantt" component={ProjectGantt}/>
 
             <Route path="/tasks" component={Tasks}/>
 
-            <Route path="/dashboard" component={Dashboard}/>
+
         </main>
     </Router>
 )

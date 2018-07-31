@@ -147,7 +147,14 @@ class ProjectsCRUD extends React.Component {
                 <i className="fas fa-users nav__item-icon"/>
                 <span className={"nav__item-text"}>Gestion des tâches</span>
             </Link>
-    }]
+    },{
+        id: "gantt",
+        Header: 'Gantt',
+        accessor: id => <Link to={`/projects/${id}/gantt`}>
+            <i className="fas fa-users nav_item-icon"/>
+            <span className={"nav__item-text"}>Gantt</span>
+        </Link>
+}]
 
     render() {
         const projects = this.props.projects
