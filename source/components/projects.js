@@ -107,11 +107,17 @@ class ProjectsCRUD extends React.Component {
     }, {
         id: "date_start",
         Header: 'Date de début',
-        accessor: id => this.props.projects.entities.projects[id].date_start.substr(0, 10) + ' ' + this.props.projects.entities.projects[id].date_start.substr(11, 5) + ':00'
+        accessor: id => `${this.props.projects.entities.projects[id].date_start.substr(0, 10)}`
+         // ${this.props.projects.entities.projects[id].date_start.substr(11, 5)}:00
     }, {
         id: "date_end",
         Header: 'Date de fin',
-        accessor: id => this.props.projects.entities.projects[id].date_end.substr(0, 10) + ' ' + this.props.projects.entities.projects[id].date_end.substr(11, 5) + ':00'
+        accessor: id => `${this.props.projects.entities.projects[id].date_end.substr(0, 10)}`
+         // ${this.props.projects.entities.projects[id].date_end.substr(11, 5)}:00
+    }, {
+        id: "price",
+        Header: 'Prix',
+        accessor: id => `${this.props.projects.entities.projects[id].price} €`
     }, {
         id: "editUsers",
         Header: 'Utilisateurs',
@@ -130,7 +136,7 @@ class ProjectsCRUD extends React.Component {
 
     render() {
         const projects = this.props.projects
-        const userJob  = this.props.userJob
+        const userJob = this.props.userJob
         if (projects.result) {
             return (
                 <div>
@@ -163,9 +169,10 @@ class ProjectsCRUD extends React.Component {
                             }]}
 
                             getTdProps={(state, rowInfo, cellInfo) => {
-                                if (userJob === 1 || userJob === 2) {return {
-                                    onClick: (e) => {
-                                        if (rowInfo && ["editUsers"].indexOf(cellInfo.id) === -1) {
+                                if (userJob === 1 || userJob === 2) {
+                                    return {
+                                        onClick: (e) => {
+                                            if (rowInfo && ["editUsers"].indexOf(cellInfo.id) === -1) {
                                                 this.props.setEditing(rowInfo.original)(e)
                                             }
                                         }

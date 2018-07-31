@@ -1,5 +1,5 @@
 {
-  "name": "Front",
+  "name": "front",
   "version": "1.0.0",
   "description": "Challenge grp 4",
   "license": "MIT",
@@ -67,7 +67,6 @@
     "react-bootstrap": "^0.32.1",
     "react-dom": "^16.2.0",
     "react-google-charts": "^2.0.20",
-    "react-masonry-component": "^6.2.0",
     "react-redux": "^5.0.6",
     "react-responsive": "^4.0.5",
     "react-router": "^4.3.1",

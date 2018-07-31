@@ -2,7 +2,6 @@ import React from "react"
 import {string, object, ref} from 'yup'
 import {Formik} from 'formik'
 import {diff} from 'deep-object-diff'
-// import  MultiSelectReact  from 'multi-select-react';
 import apiHelpers from "../helpers/apiHelpers"
 
 const Form = (props) => {
