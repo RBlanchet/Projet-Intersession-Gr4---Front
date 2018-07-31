@@ -1,6 +1,7 @@
 import apiHelpers from "../helpers/apiHelpers"
 import {normalize} from "normalizr"
 import projectSchema from "../schemas/projects"
+
 const storage = window.localStorage
 
 function isAuthenticated() {
@@ -9,6 +10,7 @@ function isAuthenticated() {
     const tokenAge = (new Date().getTime()) - parseInt(storage.getItem("Date"))
     if (tokenAge >= (1000 * 60 * 60 * 12)) {
         logoutUser()
+        window.location.hash = "#/"
     }
 
     if (!storage.getItem("Auth-Token")) {
@@ -16,6 +18,16 @@ function isAuthenticated() {
             window.location.hash = "#/"
         }
         return false
+    } else {
+        apiHelpers.apiGet("me")
+            .then((response) => {
+                console.log(response)
+            })
+            .catch((error) => {
+                console.log(error.response)
+                logoutUser()
+                window.location.hash = "#/"
+            })
     }
     return true
 }

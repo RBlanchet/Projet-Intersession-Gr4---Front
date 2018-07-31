@@ -16,6 +16,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: -15px;
+    margin-right: -15px;
+    min-height: 100vh;
   }
   &__close {
     $size: 25px;

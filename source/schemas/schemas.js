@@ -1,12 +1,12 @@
 import {schema} from 'normalizr'
 
-
-
 const job = new schema.Entity('jobs')
 const project = new schema.Entity('projects')
-const task = new schema.Entity('tasks')
+const taskStatus = new schema.Entity('taskStatus')
+const status = new schema.Entity('status')
 
-let role, user
+
+let role, user, task
 
 user = new schema.Entity("users", {
     roles: [role],
@@ -20,4 +20,9 @@ role = new schema.Entity("roles", {
     job: job,
 })
 
-export {job, project, task, user, role}
+task = new schema.Entity("tasks", {
+    status: status
+})
+
+
+export {job, project, task, user, role, taskStatus}
