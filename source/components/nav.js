@@ -2,8 +2,6 @@ import React from "react"
 import {Link} from "react-router-dom"
 import connectionHelpers from "../helpers/connectionHelpers"
 import apiHelpers from "../helpers/apiHelpers"
-import {normalize} from "normalizr"
-import projectSchema from "../schemas/projects"
 
 function logout() {
     connectionHelpers.logoutUser()
@@ -29,13 +27,11 @@ class Nav extends React.Component {
 
     render() {
         const userJob = this.state.job
-        console.log(userJob)
         if (connectionHelpers.isAuthenticated()) {
             if (this.state.job) {
-                if (userJob == 1 || userJob == 2) {
+                if (userJob === 1 || userJob === 2) {
                     return (
                         <div className={"nav"}>
-                            {/*<Link to="/">Connexion</Link>*/}
                             <Link className={"nav__item"} to="/dashboard">
                                 <i className="fas fa-tachometer-alt nav__item-icon"/>
                                 <span className={"nav__item-text"}>Tableau de bord</span>
