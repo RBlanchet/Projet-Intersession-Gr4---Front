@@ -5,10 +5,11 @@ import {HashRouter as Router, Route} from "react-router-dom"
 import Nav from "./components/nav"
 import Login from "./components/login"
 import Users from "./components/users"
+import Dashboard from "./components/dashboard"
 import ProjectTasks from "./components/projectTasks"
 import ProjectUsers from "./components/projectUsers"
 import Tasks from "./components/tasks"
-import Dashboard from "./components/dashboard"
+import ProjectGantt from "./components/projectGantt"
 import Projects from "./components/projects"
 import ReactCSSTransitionGroup from "react-addons-css-transition-group"
 
@@ -40,6 +41,7 @@ const Main = () => (
                 <Route exact path="/projects" component={TransitionedPage(Projects)}/>
                 <Route path="/projects/:id/tasks" component={ProjectTasks}/>
                 <Route path="/projects/:id/users" component={ProjectUsers}/>
+                <Route path="/projects/:id/gantt" component={ProjectGantt}/>
 
                 <Route path="/tasks" component={TransitionedPage(Tasks)}/>
 

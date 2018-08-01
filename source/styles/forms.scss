@@ -1,10 +1,10 @@
 .form-modal {
   background-color: white;
-  border: 2px solid $nav-bg;
-  //border-radius: 7px;
+  /* border: 2px solid #0288D1; */
   width: 500px;
   position: relative;
-
+  border-radius: 6px;
+  padding: 15px;
   &__overlay {
     z-index: 2;
     position: absolute;
@@ -23,16 +23,19 @@
   &__close {
     $size: 25px;
     position: absolute;
-    top: -$size/2;
-    right: -$size/2;
-    height: $size;
-    width: $size;
-    color: $nav-bg;
+    font-size: 15px;
+    top: 5px;
+    right: 5px;
+    height: 25px;
+    width: 25px;
+    color: #b3b3b3;
     border-radius: 50%;
-    border: 2px solid $nav-bg;
+    border: 0;
+    /* border: 2px solid #0288D1; */
     text-align: center;
     line-height: 17px;
     background-color: white;
+    cursor: pointer;
   }
 }
 
@@ -41,6 +44,7 @@
   flex-wrap: wrap;
   justify-content: space-around;
   padding: 15px 0;
+  font-weight: 300;
   &__input-block {
     width: 40%;
     display: flex;
@@ -53,7 +57,7 @@
   &__text {
     width: 195px;
     padding: 5px 10px;
-    border: 1px solid $nav-bg;
+    //border: 1px solid $nav-bg;
     transition: background-color .1s, border-color .1s;
     &, &:active {
       outline: none;
@@ -75,12 +79,13 @@
   &__select-wrapper {
     position: relative;
     width: 195px;
-    border: 1px solid $nav-bg;
+    border: 1px solid #cccccc;
     transition: background-color .1s, border-color .1s;
     &:after {
       content: "\f078";
       font-family: "Font Awesome 5 Free";
-      background-color: $nav-bg;
+      background-color: #a2a2a2;
+      font-size: 10px;
       color: white;
       display: flex;
       align-items: center;

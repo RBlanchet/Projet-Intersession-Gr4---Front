@@ -96,7 +96,8 @@ const ProjectsHeader = props => {
         return (
             <div className="content__header--space">
                 <h1 className="content__header--title" style={{margin: 0}}>Mes projets</h1>
-                <button className="content__header--button" onClick={props.setEditing("new")}><i className="fas fa-plus"></i></button>
+                <button className="content__header--button" onClick={props.setEditing("new")}><i
+                    className="fas fa-plus"></i></button>
             </div>
         )
     } else {
@@ -129,32 +130,45 @@ class ProjectsCRUD extends React.Component {
     }, {
         id: "date_start",
         Header: 'Date de début',
-        accessor: id => this.props.projects.entities.projects[id].date_start.substr(0, 10) + ' ' + this.props.projects.entities.projects[id].date_start.substr(11, 5) + ':00'
+        accessor: id => `${this.props.projects.entities.projects[id].date_start.substr(0, 10)}`
+        // ${this.props.projects.entities.projects[id].date_start.substr(11, 5)}:00
     }, {
         id: "date_end",
         Header: 'Date de fin',
-        accessor: id => this.props.projects.entities.projects[id].date_end.substr(0, 10) + ' ' + this.props.projects.entities.projects[id].date_end.substr(11, 5) + ':00'
+        accessor: id => `${this.props.projects.entities.projects[id].date_end.substr(0, 10)}`
+        // ${this.props.projects.entities.projects[id].date_end.substr(11, 5)}:00
+    }, {
+        id: "price",
+        Header: 'Prix',
+        accessor: id => `${this.props.projects.entities.projects[id].price} €`
     }, {
         id: "editUsers",
         Header: 'Utilisateurs',
         accessor: id =>
-        <Link to={`/projects/${id}/users`} className="nav__item-link">
-            <i className="fas fa-users nav__item-icon"/>
-            <span className={"nav__item-text"}>Gestion des utilisateurs</span>
-        </Link>
+            <Link to={`/projects/${id}/users`} className="nav__item-link">
+                <i className="fas fa-users nav__item-icon"/>
+                <span className={"nav__item-text"}>Gestion des utilisateurs</span>
+            </Link>
     }, {
         id: "editTasks",
         Header: 'Tâches',
         accessor: id =>
-        <Link to={`/projects/${id}/tasks`} className="nav__item-link">
-            <i className="fas fa-users nav__item-icon"/>
-            <span className={"nav__item-text"}>Gestion des tâches</span>
+            <Link to={`/projects/${id}/tasks`} className="nav__item-link">
+                <i className="fas fa-users nav__item-icon"/>
+                <span className={"nav__item-text"}>Gestion des tâches</span>
+            </Link>
+    },{
+        id: "gantt",
+        Header: 'Gantt',
+        accessor: id => <Link to={`/projects/${id}/gantt`}>
+            <i className="fas fa-users nav_item-icon"/>
+            <span className={"nav__item-text"}>Gantt</span>
         </Link>
-    }]
+}]
 
     render() {
         const projects = this.props.projects
-        const userJob  = this.props.userJob
+        const userJob = this.props.userJob
         if (projects.result) {
             return (
                 <div className="react-table">
@@ -191,18 +205,18 @@ class ProjectsCRUD extends React.Component {
                                             }]}
 
                                             getTdProps={(state, rowInfo, cellInfo) => {
-                                                if (userJob === 1 || userJob === 2) {return {
-                                                    onClick: (e) => {
-                                                        if (rowInfo && ["editUsers"].indexOf(cellInfo.id) === -1) {
-                                                            this.props.setEditing(rowInfo.original)(e)
+                                                if (userJob === 1 || userJob === 2) {
+                                                    return {
+                                                        onClick: (e) => {
+                                                            if (rowInfo && ["editUsers"].indexOf(cellInfo.id) === -1) {
+                                                                this.props.setEditing(rowInfo.original)(e)
+                                                            }
                                                         }
                                                     }
-                                                }
                                                 } else {
                                                     return false
                                                 }
-                                            }}
-                                        />
+                                            }}/>
                                     </div>
                                 </div>
                             </div>
