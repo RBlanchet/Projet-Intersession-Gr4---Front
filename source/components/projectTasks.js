@@ -4,6 +4,7 @@ import {normalize} from "normalizr"
 import TasksForm from "./tasksForm"
 import ReactTable from "react-table"
 import taskSchema from "../schemas/tasks"
+import {Link} from "react-router-dom"
 
 class Tasks extends React.Component {
     constructor(props) {
@@ -67,9 +68,16 @@ class Tasks extends React.Component {
 
 const TasksHeader = props => {
     return (
-        <div>
-            <h1 style={{margin: 0}}>Tâches du projet {props.projectId}</h1>
-            <button onClick={props.setEditing("new")}>Créer un utilisateur</button>
+        <div className="content__header--space">
+            <h1 className="content__header--title" style={{margin: 0}}>Tâches du projet {props.projectId}</h1>
+            <div className="content__header--buttons">
+                <Link to={"/projects"} className="content__header--button">
+                    <i className="fas fa-arrow-left"/>
+                </Link>
+                <button className="content__header--button" onClick={props.setEditing("new")}>
+                    <i className="fas fa-plus"/>
+                </button>
+            </div>
         </div>
     )
 }
@@ -80,6 +88,16 @@ class TasksCRUD extends React.Component {
         id: "name",
         Header: 'Intitulé',
         accessor: id => this.props.tasks.entities.tasks[id].name,
+    }, {
+        id: "startAt",
+        Header: 'Date de début',
+        accessor: id => `${this.props.tasks.entities.tasks[id].startAt.substr(0, 10)}`
+        // ${this.props.tasks.entities.tasks[id].startAt.substr(11, 5)}:00
+    }, {
+        id: "endAt",
+        Header: 'Date de fin',
+        accessor: id => `${this.props.tasks.entities.tasks[id].endAt.substr(0, 10)}`
+        // ${this.props.projects.entities.projects[id].endAt.substr(11, 5)}:00
     }]
 
     render() {
@@ -99,32 +117,40 @@ class TasksCRUD extends React.Component {
                         }
                     </div>
                     <div>
-                        <ReactTable
-                            data={tasks.result}
-                            columns={this.columns}
-                            showPageSizeOptions={false}
-                            defaultPageSize={10}
-                            previousText={'Précedent'}
-                            nextText={'Suivant'}
-                            loadingText={'Chargement'}
-                            noDataText='Aucun utilisateur trouvé'
-                            pageText='Page'
-                            ofText='sur'
-                            rowsText='lignes'
-                            defaultSorted={[{
-                                id: 'lastname'
-                            }]}
+                        <div className="row">
+                            <div className="row__col-100">
+                                <div className="card card__lg">
+                                    <div className="content__inner">
+                                        <ReactTable
+                                            data={tasks.result}
+                                            columns={this.columns}
+                                            showPageSizeOptions={false}
+                                            defaultPageSize={16}
+                                            previousText={<i className="fas fa-chevron-left"/>}
+                                            nextText={<i className="fas fa-chevron-right"/>}
+                                            loadingText={'Chargement'}
+                                            noDataText='Aucune tâche trouvé'
+                                            pageText='Page'
+                                            ofText='sur'
+                                            rowsText='lignes'
+                                            defaultSorted={[{
+                                                id: 'lastname'
+                                            }]}
 
-                            getTdProps={(state, rowInfo) => {
-                                return {
-                                    onClick: (e) => {
-                                        if (rowInfo) {
-                                            this.props.setEditing(rowInfo.original)(e)
-                                        }
-                                    }
-                                }
-                            }}
-                        />
+                                            getTdProps={(state, rowInfo) => {
+                                                return {
+                                                    onClick: (e) => {
+                                                        if (rowInfo) {
+                                                            this.props.setEditing(rowInfo.original)(e)
+                                                        }
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )
