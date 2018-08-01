@@ -99,7 +99,9 @@ class Nav extends React.Component {
             }
 
         } else {
-            return ('')
+            return (
+                <Loading/>
+            )
         }
     }
 }

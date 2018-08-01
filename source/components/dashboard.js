@@ -7,6 +7,8 @@ import taskSchema from "../schemas/tasks"
 import {Link} from "react-router-dom"
 import ReactTable from "react-table"
 import {taskStatus} from "../schemas/schemas"
+import styled from "styled-components"
+import ReactCSSTransitionGroup from "react-addons-css-transition-group"
 
 function daysToMilliseconds(days) {
     return days * 24 * 60 * 60 * 1000
@@ -94,24 +96,33 @@ class Dashboard extends React.Component {
 
     render() {
         return (
-            <div className={"content"}>
-                <div className="content__header">
-                    <h1 className="content__header--title" style={{margin: 0}}>Tableau de bord</h1>
+            <ReactCSSTransitionGroup
+                transitionAppear={true}
+                transitionAppearTimeout={600}
+                transitionEnterTimeout={600}
+                transitionLeaveTimeout={200}
+                transitionName="slide">
+                <div>
+                    <div className={"content"}>
+                        <div className="content__header">
+                            <h1 className="content__header--title" style={{margin: 0}}>Tableau de bord</h1>
+                        </div>
+                        <div className="content__inner">
+                            {/*<Chart*/}
+                            {/*chartType="Gantt"*/}
+                            {/*data={[this.state.columns, ...this.state.rows]}*/}
+                            {/*width="100%"*/}
+                            {/*height="50%"*/}
+                            {/*legendToggle*/}
+                            {/*/>*/}
+                            <DashBoardCard
+                                projects={this.state.projects}
+                                tasks={this.state.tasks}
+                            />
+                        </div>
+                    </div>
                 </div>
-                <div className="content__inner">
-                    {/*<Chart*/}
-                    {/*chartType="Gantt"*/}
-                    {/*data={[this.state.columns, ...this.state.rows]}*/}
-                    {/*width="100%"*/}
-                    {/*height="50%"*/}
-                    {/*legendToggle*/}
-                    {/*/>*/}
-                    <DashBoardCard
-                        projects={this.state.projects}
-                        tasks={this.state.tasks}
-                    />
-                </div>
-            </div>
+            </ReactCSSTransitionGroup>
         )
     }
 }
