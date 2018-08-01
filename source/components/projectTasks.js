@@ -5,6 +5,7 @@ import TasksForm from "./tasksForm"
 import ReactTable from "react-table"
 import taskSchema from "../schemas/tasks"
 import {Link} from "react-router-dom"
+import {role} from "../schemas/schemas"
 
 class Tasks extends React.Component {
     constructor(props) {
@@ -22,11 +23,14 @@ class Tasks extends React.Component {
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/tasks`).then((response) => {
             this.setState({tasks: normalize(response.data, taskSchema)})
         })
+        apiHelpers.apiGet(`projects/${this.props.match.params.id}/roles`).then((response) => {
+            this.setState({roles: normalize(response.data, [role])})
+        })
     }
 
     reloadTasks() {
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/tasks`).then((response) => {
-            this.setState({roles: normalize(response.data, taskSchema)})
+            this.setState({tasks: normalize(response.data, taskSchema)})
         })
     }
 
@@ -55,6 +59,7 @@ class Tasks extends React.Component {
                     <TasksCRUD
                         tasks={this.state.tasks}
                         // jobs={this.state.jobs}
+                        roles={this.state.roles}
                         reloadTasks={this.reloadTasks}
                         setEditing={this.setEditing}
                         editing={this.state.editing}
@@ -102,17 +107,18 @@ class TasksCRUD extends React.Component {
 
     render() {
         const tasks = this.props.tasks
-        // const jobs = this.props.jobs
-        if (tasks) {
+        const roles = this.props.roles
+        if (tasks && roles) {
             return (
                 <div>
                     <div>
                         {this.props.editing
                             ? <TasksForm
                                 tasks={tasks}
-                                // jobs={jobs}
+                                roles={roles}
                                 editing={this.props.editing}
-                                setEditing={this.props.setEditing}/>
+                                setEditing={this.props.setEditing}
+                                projectId={this.props.projectId}/>
                             : ""
                         }
                     </div>

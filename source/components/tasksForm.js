@@ -1,10 +1,19 @@
 import React from "react"
-import {string, object, ref} from 'yup'
+import {string, object, array} from 'yup'
 import {Formik} from 'formik'
 import {diff} from 'deep-object-diff'
 import apiHelpers from "../helpers/apiHelpers"
+import Select from './select'
 
 const Form = (props) => {
+
+    let users = []
+    {
+        Object.keys(props.roles.entities.users).map((key) => {
+            const user = props.roles.entities.users[key]
+            users.push({value: user.id, label: `${user.firstname} ${user.lastname}`})
+        })
+    }
 
     return (
         <div className={"form-modal__overlay"} onClick={props.setEditing(false)}>
@@ -104,12 +113,11 @@ const Form = (props) => {
                             className={props.errors.status && props.touched.status
                                 ? 'text-input error'
                                 : 'text-input'
-                            }
-                        >
-                            <option value='to_do'>A faire</option>
-                            <option value='in_progress'>En cours</option>
-                            <option value='finished'>Terminée</option>
-                            <option value='validated'>Validée</option>
+                            }>
+                            <option value='1'>A faire</option>
+                            <option value='2'>En cours</option>
+                            <option value='3'>Terminée</option>
+                            <option value='4'>Validée</option>
                         </select>
                         {props.errors.status &&
                         props.touched.status &&
@@ -134,6 +142,21 @@ const Form = (props) => {
                         props.touched.cost &&
                         <div className="input-feedback">{props.errors.cost}</div>}
                     </div>
+
+                    <div className={"form__input-block form__input-block--double"}>
+                        <Select
+                            value={props.values.users}
+                            onChange={props.setFieldValue}
+                            options={users}
+                            placeholder={"Utilisateurs"}
+                            onBlur={props.handleBlur}
+                            fieldName="users"
+                        />
+                        {props.errors.users &&
+                        props.touched.users &&
+                        <div className="input-feedback">{props.errors.users}</div>}
+                    </div>
+
                     <div className={"form__input-block form__input-block--double"}>
                         <label htmlFor="name" className={"form__label"}>
                             Heure alloué à la tache
@@ -180,16 +203,31 @@ const Form = (props) => {
 class TasksForm extends React.Component {
 
     handleSubmit(values, {setSubmitting}) {
-        setTimeout(() => {
-            const changed = diff(this.initialValues, values)
-            if (this.editing == 'new') {
-                apiHelpers.apiPatch("tasks", values)
-            } else {
-                apiHelpers.apiPatch("tasks/" + this.editing, values)
-            }
-            // alert(JSON.stringify(changed, null, 2))
-            setSubmitting(false)
-        }, 100)
+        const projectId = this.projectId
+        const changed = diff(this.initialValues, values)
+
+        if (this.editing === "new") {
+            const userId = changed.user
+            delete changed.user
+            changed.project = this.projectId
+            apiHelpers.apiPost(`project/${projectId}/tasks`, changed).then(response => {
+                if (response.status === 201) {
+                    this.setEditing(false)()
+                } else {
+                    // TODO: error feedback
+                    setSubmitting(false)
+                }
+            })
+        } else {
+            apiHelpers.apiPatch("tasks", changed, this.editing).then(response => {
+                if (response.status === 201) {
+                    this.setEditing(false)()
+                } else {
+                    // TODO: error feedback
+                    setSubmitting(false)
+                }
+            })
+        }
     }
 
     deleteTask(id) {
@@ -209,6 +247,7 @@ class TasksForm extends React.Component {
             editingTask = false
         } else {
             editingTask = this.props.tasks.entities.tasks[this.props.editing]
+            console.log(editingTask)
         }
         return (
             <div>
@@ -228,8 +267,9 @@ class TasksForm extends React.Component {
                                 .required('Vous devez saisir une date'),
                             cost: string()
                                 .required('Le prix ne peut être négatif'),
-
-
+                            users: array()
+                                .required("Veuillez choisir au moins 1 utilisateur")
+                                .min(1, "Veuillez choisir au moins 1 utilisateur"),
                         })
                     }
                     onSubmit={this.handleSubmit}
@@ -237,17 +277,18 @@ class TasksForm extends React.Component {
                         name: editingTask.name,
                         start_at: editingTask.start_at ? editingTask.start_at.substr(0, 10) : null,
                         end_at: editingTask.end_at ? editingTask.end_at.substr(0, 10) : null,
-
                         cost: editingTask.cost,
                         time_spend: editingTask.hour_spend,
                         description: editingTask.description,
                         status: editingTask.status,
+                        // users: [{label: "Admin Admin", value: 1}]
                     }}
                     render={formikProps =>
                         <Form {...formikProps} displayName={"TasksInnerForm"}
                               setEditing={this.props.setEditing}
                               editing={this.props.editing}
-                              deleteTask={this.deleteTask}/>
+                              deleteTask={this.deleteTask}
+                              roles={this.props.roles}/>
                     }
                 />
 

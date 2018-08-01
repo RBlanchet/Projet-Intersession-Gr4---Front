@@ -72,6 +72,7 @@
     "react-router": "^4.3.1",
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^5.0.0-alpha.9",
+    "react-select": "^2.0.0",
     "react-swipe": "^5.1.1",
     "react-swipeable-views": "^0.12.13",
     "react-table": "^6.8.6",
