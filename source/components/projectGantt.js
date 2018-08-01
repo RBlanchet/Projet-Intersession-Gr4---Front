@@ -5,56 +5,144 @@ import ReactTable from "react-table"
 import ReactDOM from "react-dom"
 import {Chart} from "react-google-charts"
 import taskSchema from "../schemas/tasks"
+import {Link} from "react-router-dom"
+import Gantt from "./gantt"
+import Toolbar from './toolbar'
+import MessageArea from './messageArea'
+import './App.css'
 
-class ProjectGantt extends React.Component {
+
+export default class ProjectGantt extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            currentZoom: 'Days',
+            messages: [],
             users: false,
             editing: false,
-            columns: [
-                {type: "string", label: "Task ID"},
-                {type: "string", label: "Task Name"},
-                {type: "date", label: "Start Date"},
-                {type: "date", label: "End Date"},
-                {type: "number", label: "Duration"},
-                {type: "number", label: "Percent Complete"},
-                {type: "string", label: "Dependencies"}
-            ]
         }
+        this.handleZoomChange = this.handleZoomChange.bind(this);
+        this.logTaskUpdate = this.logTaskUpdate.bind(this);
+        this.logLinkUpdate = this.logLinkUpdate.bind(this);
     }
 
     componentDidMount() {
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/tasks`).then((response) => {
             this.setState({tasks: response.data})
         })
+        apiHelpers.apiGet(`projects/${this.props.match.params.id}`).then((response) => {
+            this.setState({project: response.data})
+        })
+    }
+    handleZoomChange(zoom) {
+        this.setState({
+            currentZoom: zoom
+        });
+    }
+
+    addMessage(message) {
+        var messages = this.state.messages.slice();
+        var prevKey = messages.length ? messages[0].key: 0;
+
+        messages.unshift({key: prevKey + 1, message});
+        if(messages.length > 40){
+            messages.pop();
+        }
+        this.setState({messages});
+    }
+
+    logTaskUpdate(id, mode, task) {
+        let text = task && task.text ? ` (${task.text})`: '';
+        let message = `Task ${mode}: ${id} ${text}`;
+        this.addMessage(message);
+    }
+
+    logLinkUpdate(id, mode, link) {
+        let message = `Link ${mode}: ${id}`;
+        if (link) {
+            message += ` ( source: ${link.source}, target: ${link.target} )`;
+        }
+        this.addMessage(message)
     }
 
     render() {
         const tasks = this.state.tasks
-        var rows = []
-        if (tasks){
-tasks.map(function(task, i){
-    rows[i] = [task.id, task.name, new Date(task.startAt), new Date(task.endAt), task.timeSpend, task.active ? 0: 100, task.parent]
-})
-        }
-        return (
-            <div className="Gantt">
-                <div className="content__inner">
-                <Chart
-                    chartType="Gantt"
-                    data={[this.state.columns, ...rows]}
-                    width="100%"
-                    height="50%"
-                    legendToggle
-                />
-                    <div>
-                        Amagantt
+        var data = {data: [], links: []}
+
+        if (tasks) {
+            tasks.map(function (task, i) {
+                data.data.push( {
+                    id: task.id,
+                    text: task.name,
+                    start_date: new Date(task.startAt),
+                    end_date: new Date(task.endAt),
+                    duration: task.timeSpend,
+                    progress: task.status.percentage /100
+                })
+                data.links.push({
+                    id: task.parent,
+                    source: task.parent,
+                    target: task.id,
+                    type: '0'
+                })
+            })
+            console.log(data)
+            return (
+                <div>
+                    <Toolbar
+                        zoom={this.state.currentZoom}
+                        onZoomChange={this.handleZoomChange}
+                    />
+                    <div className="gantt-container">
+                        <Gantt
+                            tasks={data}
+                            zoom={this.state.currentZoom}
+                            onTaskUpdated={this.logTaskUpdate}
+                            onLinkUpdated={this.logLinkUpdate}
+                        />
                     </div>
+                    <MessageArea
+                        messages={this.state.messages}
+                    />
                 </div>
-            </div>
-        )
+            )
+        }
+        else {
+            return (
+                <div>
+                    <div className="content__header">
+
+                    </div>
+                    <ReactTable
+                        data={[]}
+                        columns={[]}
+                        showPageSizeOptions={false}
+                        defaultPageSize={10}
+                        previousText={'Précedent'}
+                        nextText={'Suivant'}
+                        loadingText={'Chargement'}
+                        noDataText='Aucun tache trouvé'
+                        pageText='Page'
+                        ofText='sur'
+                        rowsText='lignes'
+                    />
+                </div>
+            )
+        }
+
     }
+}
+
+
+const GanttHeader = props => {
+    return (
+        <div>
+            <h1 style={{margin: 0}}>Participants au projet : {'toto'}</h1>
+            <Link to={"/projects"}>
+                Retour aux projets
+            </Link>
+        </div>
+    )
 }
 //
 // function daysToMilliseconds(days) {
@@ -144,5 +232,3 @@ tasks.map(function(task, i){
 //         )
 //     }
 // }
-
-export default ProjectGantt
