@@ -88,18 +88,46 @@ export default class Gantt extends Component {
                 this.props.onLinkUpdated(id, 'deleted');
             }
         });
+        gantt.attachEvent("onBeforeLightbox",(id) =>{
+            var task = gantt.getTask(id)
+            var users = ""
+            task.users.map((user, i) =>{
+              users += "<span>" + user.firstname+ " " + user.lastname + "</span>"
+            })
+            task.details = "<span id='title1'>Users: </span>"+ users +
+                "<span id='title2'>Progress :</span>" + task.progress*100 + " %" +
+                "<span id='title3'> Cost :</span>" + task.cost + " €"
+            return true
+        })
     }
 
     componentDidMount() {
         this.initGanttEvents();
         gantt.init(this.ganttContainer);
         gantt.parse(this.props.tasks);
-        gantt.config.lightbox.sections=[
-            {name:"name", height:30, map_to:"text", type:"textarea"},
-            {name:"description", height:70, map_to:"text", type:"textarea"},
-            {name:"time",        height:72, map_to:"auto", type:"time"}
 
-        ]
+        gantt.config.lightbox.sections=[
+            {name:"name", height:30, map_to:"name", type:"textarea"},
+            {name:"details", height:16, type:"template", map_to:"details"},
+            {name:"description", height:30, map_to:"text", type:"textarea"},
+            {name:"cost", height:30, map_to:"cost", type:"textarea"},
+            {name:"time",        height:60, map_to:"auto", type:"time"},
+            {name:"parent", type:"parent", allow_root:"true", root_label:"Pas de parent"},
+            {name:"users", map_to:"users", type:"checkbox", options:gantt.serverList("users")},
+            {name:"status",  height: 22, map_to:"status", type:"select", options: [
+                {key: 1, label:"A faire"},
+                {key: 2, label: "En cours"},
+                {key: 3, label: "Terminée"},
+                {key: 4, label: "Validée"}
+                ]},
+            ]
+        gantt.locale.labels.section_name = "Nom de la Tache"
+        gantt.locale.labels.section_details = "Details"
+        gantt.locale.labels.section_time = "Durée"
+        gantt.locale.labels.section_parent = "Tache parente"
+        gantt.locale.labels.section_status = "Statut"
+        gantt.locale.labels.section_users = "Ajouter a la tache"
+        gantt.locale.labels.section_cost = "Coût de la tache"
     }
 
     render() {

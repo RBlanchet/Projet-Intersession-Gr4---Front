@@ -33,6 +33,9 @@ export default class ProjectGantt extends React.Component {
         apiHelpers.apiGet(`projects/${this.props.match.params.id}`).then((response) => {
             this.setState({project: response.data})
         })
+        apiHelpers.apiGet(`projects/${this.props.match.params.id}/users`).then((response) => {
+            this.setState({users: response.data})
+        })
     }
     handleZoomChange(zoom) {
         this.setState({
@@ -67,8 +70,23 @@ export default class ProjectGantt extends React.Component {
 
     render() {
         const tasks = this.state.tasks
+        const project = this.state.project
+        const users = this.state.users
         var data = {data: [], links: []}
+        var projectUsers = []
+        if (users){
 
+            users.map((user, i) =>{
+                projectUsers.push({
+                    key: user.id,
+                    label: user.firstname + " " + user.lastname
+                })
+            })
+            gantt.serverList("users", projectUsers)
+        }
+        if(project){
+
+        }
         if (tasks) {
             tasks.map(function (task, i) {
                 data.data.push( {
@@ -77,7 +95,9 @@ export default class ProjectGantt extends React.Component {
                     start_date: new Date(task.startAt),
                     end_date: new Date(task.endAt),
                     duration: task.timeSpend,
-                    progress: task.status.percentage /100
+                    progress: task.status.percentage /100,
+                    users: task.users,
+                    cost: task.cost,
                 })
                 data.links.push({
                     id: task.parent,
