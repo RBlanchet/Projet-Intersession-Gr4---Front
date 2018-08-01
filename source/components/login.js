@@ -5,6 +5,7 @@ import {Link} from "react-router-dom"
 import apiHelpers from "../helpers/apiHelpers"
 import connectionHelpers from "../helpers/connectionHelpers"
 import {Redirect} from "react-router-dom"
+import styled from "styled-components"
 
 class Login extends React.Component {
     constructor(props) {
@@ -24,7 +25,7 @@ class Login extends React.Component {
                     </h1>
                     <form onSubmit={this.props.handleSubmit} className="form">
                         {/*<label htmlFor="login" style={{display: 'block'}}>*/}
-                            {/*Email*/}
+                        {/*Email*/}
                         {/*</label>*/}
                         {this.props.errors.login &&
                         this.props.touched.login && <div className="input-feedback">{this.props.errors.login}</div>}
@@ -38,10 +39,11 @@ class Login extends React.Component {
                             className={this.props.errors.login && this.props.touched.login ? 'form__input-block-login form__input-block-login--hover form__input-block-login--error' : 'text-input' && 'form__input-block-login form__input-block-login--hover'}
                         />
                         {/*<label htmlFor="password" style={{display: 'block'}}>*/}
-                            {/*Mot de passe*/}
+                        {/*Mot de passe*/}
                         {/*</label>*/}
                         {this.props.errors.password &&
-                        this.props.touched.password && <div className="input-feedback">{this.props.errors.password}</div>}
+                        this.props.touched.password &&
+                        <div className="input-feedback">{this.props.errors.password}</div>}
                         <input
                             id="password"
                             placeholder="********"
@@ -52,7 +54,8 @@ class Login extends React.Component {
                             className={this.props.errors.password && this.props.touched.password ? 'form__input-block-login form__input-block-login--hover form__input-block-login--error' : 'text-input' && 'form__input-block-login form__input-block-login--hover'}
                         />
 
-                        <button type="submit" disabled={this.props.isSubmitting} className="form__submit form__submit--hover">
+                        <button type="submit" disabled={this.props.isSubmitting}
+                                className="form__submit form__submit--hover">
                             Go!
                         </button>
 
@@ -88,5 +91,20 @@ const LoginForm = withFormik({
     },
     displayName: 'LoginForm', // helps with React DevTools
 })(Login)
+
+const Wrapper = styled.div`
+  min-height: calc(100vh - 50px);
+  background-color: #00d38a;
+  padding: 20px;
+
+  span {
+    color: #fff;
+    font-size: 40px;
+  }
+
+  section {
+    color: #fff;
+  }
+`
 
 export default LoginForm

@@ -6,6 +6,7 @@ import ProjectsForm from "./projectsForm"
 import usersSchema from "../schemas/users"
 import ReactTable from "react-table"
 import {Link} from "react-router-dom"
+import ReactCSSTransitionGroup from "react-addons-css-transition-group"
 
 
 class Projects extends React.Component {
@@ -57,25 +58,34 @@ class Projects extends React.Component {
     render() {
         if (this.state.user) {
             return (
-                <div className={"content"}>
-                    <div className="content__header">
-                        <ProjectsHeader setEditing={this.setEditing}
+                <ReactCSSTransitionGroup
+                    transitionAppear={true}
+                    transitionAppearTimeout={600}
+                    transitionEnterTimeout={600}
+                    transitionLeaveTimeout={200}
+                    transitionName="slide">
+                    <div className={"content"}>
+                        <div className="content__header">
+                            <ProjectsHeader setEditing={this.setEditing}
                                         userJob={this.state.user.job.id}/>
+                        </div>
+                        <div className="content__inner">
+                            <ProjectsCRUD
+                                projects={this.state.projects}
+                                users={this.state.users}
+                                reloadProjects={this.reloadProjects}
+                                setEditing={this.setEditing}
+                                editing={this.state.editing}
+                                userJob={this.state.user.job.id}
+                            />
+                        </div>
                     </div>
-                    <div className="content__inner">
-                        <ProjectsCRUD
-                            projects={this.state.projects}
-                            users={this.state.users}
-                            reloadProjects={this.reloadProjects}
-                            setEditing={this.setEditing}
-                            editing={this.state.editing}
-                            userJob={this.state.user.job.id}
-                        />
-                    </div>
-                </div>
+                </ReactCSSTransitionGroup>
             )
         } else {
-            return 'Chargement ...'
+            return (
+                <Loading/>
+            )
         }
 
     }

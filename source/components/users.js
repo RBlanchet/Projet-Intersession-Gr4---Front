@@ -6,6 +6,7 @@ import apiHelpers from "../helpers/apiHelpers"
 import usersSchema from "../schemas/users"
 import jobSchema from "../schemas/jobs"
 import connectionHelpers from "../helpers/connectionHelpers"
+import ReactCSSTransitionGroup from "react-addons-css-transition-group"
 
 
 class Users extends React.Component {
@@ -52,18 +53,25 @@ class Users extends React.Component {
 
     render() {
         return (
-            <div className={"content"}>
-                <div className="content__header">
-                    <UsersHeader setEditing={this.setEditing}/>
+            <ReactCSSTransitionGroup
+                transitionAppear={true}
+                transitionAppearTimeout={600}
+                transitionEnterTimeout={600}
+                transitionLeaveTimeout={200}
+                transitionName="slide">
+                <div className={"content"}>
+                    <div className="content__header">
+                        <UsersHeader setEditing={this.setEditing}/>
+                    </div>
+                    <UsersCRUD
+                        users={this.state.users}
+                        jobs={this.state.jobs}
+                        reloadUsers={this.reloadUsers}
+                        setEditing={this.setEditing}
+                        editing={this.state.editing}
+                    />
                 </div>
-                <UsersCRUD
-                    users={this.state.users}
-                    jobs={this.state.jobs}
-                    reloadUsers={this.reloadUsers}
-                    setEditing={this.setEditing}
-                    editing={this.state.editing}
-                />
-            </div>
+            </ReactCSSTransitionGroup>
         )
     }
 }

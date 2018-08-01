@@ -7,6 +7,8 @@ import taskSchema from "../schemas/tasks"
 import {Link} from "react-router-dom"
 import ReactTable from "react-table"
 import {taskStatus} from "../schemas/schemas"
+import styled from "styled-components"
+import ReactCSSTransitionGroup from "react-addons-css-transition-group"
 
 function daysToMilliseconds(days) {
     return days * 24 * 60 * 60 * 1000
@@ -76,7 +78,7 @@ class Dashboard extends React.Component {
             projects: false,
             user: false,
             tasks: false,
-            taskStatus: false
+            tasksStatus: false
         }
     }
 
@@ -89,29 +91,42 @@ class Dashboard extends React.Component {
             apiHelpers.apiGet("users/" + response.data.id + "/tasks").then((response) => {
                 this.setState({tasks: normalize(response.data, taskSchema)})
             })
+            apiHelpers.apiGet("users/" + response.data.id + "/tasks-status").then((response) => {
+                this.setState({tasksStatus: response.data})
+            })
         })
     }
 
     render() {
         return (
-            <div className={"content"}>
-                <div className="content__header">
-                    <h1 className="content__header--title" style={{margin: 0}}>Tableau de bord</h1>
+            <ReactCSSTransitionGroup
+                transitionAppear={true}
+                transitionAppearTimeout={600}
+                transitionEnterTimeout={600}
+                transitionLeaveTimeout={200}
+                transitionName="slide">
+                <div>
+                    <div className={"content"}>
+                        <div className="content__header">
+                            <h1 className="content__header--title" style={{margin: 0}}>Tableau de bord</h1>
+                        </div>
+                        <div className="content__inner">
+                            {/*<Chart*/}
+                            {/*chartType="Gantt"*/}
+                            {/*data={[this.state.columns, ...this.state.rows]}*/}
+                            {/*width="100%"*/}
+                            {/*height="50%"*/}
+                            {/*legendToggle*/}
+                            {/*/>*/}
+                            <DashBoardCard
+                                projects={this.state.projects}
+                                tasks={this.state.tasks}
+                                tasksStatus={this.state.tasksStatus}
+                            />
+                        </div>
+                    </div>
                 </div>
-                <div className="content__inner">
-                    {/*<Chart*/}
-                    {/*chartType="Gantt"*/}
-                    {/*data={[this.state.columns, ...this.state.rows]}*/}
-                    {/*width="100%"*/}
-                    {/*height="50%"*/}
-                    {/*legendToggle*/}
-                    {/*/>*/}
-                    <DashBoardCard
-                        projects={this.state.projects}
-                        tasks={this.state.tasks}
-                    />
-                </div>
-            </div>
+            </ReactCSSTransitionGroup>
         )
     }
 }
@@ -132,6 +147,7 @@ class DashBoardCard extends React.Component {
     render() {
         const projects = this.props.projects
         const tasks = this.props.tasks
+        const tasksStatus = this.props.tasksStatus
 
         if (typeof tasks.entities !== 'undefined' && typeof projects.entities !== 'undefined') {
             return (
@@ -152,6 +168,15 @@ class DashBoardCard extends React.Component {
                             type={"projects"}
                         />
                     </div>
+                    <div className="row__col-50">
+                        <CardPieCharts
+                            title={"Activités des tâches"}
+                            data={tasks.result}
+                            entities={tasks.entities.tasks}
+                            type={"tasks-charts"}
+                            tasksStatus={tasksStatus}
+                        />
+                    </div>
                 </div>
             )
         } else {
@@ -173,6 +198,15 @@ class DashBoardCard extends React.Component {
                             type={"tasks"}
                         />
                     </div>
+                    <div className="row__col-50">
+                        <CardPieCharts
+                            title={"Activités des tâches"}
+                            data={tasks.result}
+                            entities={false}
+                            type={"tasks-charts"}
+                            tasksStatus={tasksStatus}
+                        />
+                    </div>
                 </div>
             )
         }
@@ -190,16 +224,49 @@ class Card extends React.Component {
                     id: "name",
                     Header: 'Nom de la tache',
                     accessor: id => this.props.entities[id].name
-                }, {
-                    id: "status",
-                    Header: 'Statut de la tâche',
-                    accessor: id => this.props.entities[id].status.title
                 }]
-        } else {
+        } else if (props.type == 'projects') {
             this.columns = [{
                 id: "name",
                 Header: 'Nom',
                 accessor: id => this.props.entities[id].name
+            }]
+        } else if (props.type == 'tasks-charts') {
+            this.pieOptions = [{
+                title: "",
+                pieHole: 0.6,
+                slices: [
+                    {
+                        color: "#2BB673"
+                    },
+                    {
+                        color: "#d91e48"
+                    },
+                    {
+                        color: "#007fad"
+                    },
+                    {
+                        color: "#e9a227"
+                    }
+                ],
+                legend: {
+                    position: "bottom",
+                    alignment: "center",
+                    textStyle: {
+                        color: "233238",
+                        fontSize: 14
+                    }
+                },
+                tooltip: {
+                    showColorCode: true
+                },
+                chartArea: {
+                    left: 0,
+                    top: 0,
+                    width: "100%",
+                    height: "80%"
+                },
+                fontName: "Roboto"
             }]
         }
 
@@ -207,31 +274,130 @@ class Card extends React.Component {
 
     render() {
         if (this.props.entities) {
+            if (this.props.type != 'tasks-charts') {
+                return (
+                    <div className="card">
+                        <div className="card__header">
+                            <h2 className="card__header--title">{this.props.title}</h2>
+                        </div>
+                        <div className="card__body">
+                            <ReactTable
+                                data={this.props.data}
+                                columns={this.columns}
+                                showPageSizeOptions={false}
+                                defaultPageSize={5}
+                                previousText={<i className="fas fa-chevron-left"></i>}
+                                nextText={<i className="fas fa-chevron-right"></i>}
+                                loadingText={'Chargement'}
+                                noDataText='Aucun projet trouvé'
+                                pageText='Page'
+                                ofText='sur '
+                                rowsText='lignes'
+                                defaultSorted={[{
+                                    id: 'name'
+                                }]}
+
+                                getTdProps={(state, rowInfo, cellInfo) => {
+                                    return false
+                                }}
+                            />
+                        </div>
+                    </div>
+                )
+            } else {
+                return (
+                    <div className="card">
+                        <div className="card__header">
+                            <h2 className="card__header--title">{this.props.title}</h2>
+                        </div>
+                        <div className="card__body">
+                            <Chart
+                                chartType="PieChart"
+                                data={[["Age", "Weight"], ["Age", 12], ["Caca", 5.5]]}
+                                options={this.pieOptions}
+                                graph_id="PieChart"
+                                width={"100%"}
+                                height={"239px"}
+                                legend_toggle
+                            />
+                        </div>
+                    </div>
+                )
+            }
+        } else {
             return (
                 <div className="card">
                     <div className="card__header">
                         <h2 className="card__header--title">{this.props.title}</h2>
                     </div>
                     <div className="card__body">
-                        <ReactTable
-                            data={this.props.data}
-                            columns={this.columns}
-                            showPageSizeOptions={false}
-                            defaultPageSize={5}
-                            previousText={<i className="fas fa-chevron-left"></i>}
-                            nextText={<i className="fas fa-chevron-right"></i>}
-                            loadingText={'Chargement'}
-                            noDataText='Aucun projet trouvé'
-                            pageText='Page'
-                            ofText='sur '
-                            rowsText='lignes'
-                            defaultSorted={[{
-                                id: 'name'
-                            }]}
+                        <Loading/>
+                    </div>
+                </div>
+            )
+        }
+    }
+}
 
-                            getTdProps={(state, rowInfo, cellInfo) => {
-                                return false
-                            }}
+class CardPieCharts extends React.Component {
+    constructor(props) {
+        super(props)
+        this.pieOptions = [{
+            title: "",
+            pieHole: 0.6,
+            slices: [
+                {
+                    color: "#2BB673"
+                },
+                {
+                    color: "#d91e48"
+                },
+                {
+                    color: "#007fad"
+                },
+                {
+                    color: "#e9a227"
+                }
+            ],
+            legend: {
+                position: "bottom",
+                alignment: "center",
+                textStyle: {
+                    color: "233238",
+                    fontSize: 14
+                }
+            },
+            tooltip: {
+                showColorCode: true
+            },
+            chartArea: {
+                left: 0,
+                top: 0,
+                width: "100%",
+                height: "80%"
+            },
+            fontName: "Roboto"
+        }]
+    }
+
+    render() {
+        const tasksStatus = this.props.tasksStatus
+        if (tasksStatus) {
+            return (
+                <div className="card">
+                    <div className="card__header">
+                        <h2 className="card__header--title">{this.props.title}</h2>
+                    </div>
+                    <div className="card__body">
+                        <Chart
+                            chartType="PieChart"
+                            data={[["Label", "Value"], tasksStatus.data[1], tasksStatus.data[2], tasksStatus.data[3], tasksStatus.data[4]]}
+                            // data={[["En Cours", "A faire", "Finit", "Validée"], ["En Cours", 4], ["A faire", 4], ["Finit", 4], ["Validée", 4]]}
+                            options={this.pieOptions}
+                            graph_id="PieChart"
+                            width={"100%"}
+                            height={"239px"}
+                            legend_toggle
                         />
                     </div>
                 </div>
@@ -250,5 +416,6 @@ class Card extends React.Component {
         }
     }
 }
+
 
 export default Dashboard

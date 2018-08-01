@@ -173,7 +173,7 @@ const NewForm = (props) => {
                         <button className={"form__button form__button--red"}
                                 onClick={props.setEditing(false)}
                                 type="button">
-                            Anuller
+                            Annuler
                         </button>
                     </div>
 

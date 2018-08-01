@@ -3,6 +3,7 @@ import {normalize} from 'normalizr'
 import apiHelpers from "../helpers/apiHelpers"
 import taskSchema from "../schemas/tasks"
 import TaskForm from "./tasksForm"
+import ReactCSSTransitionGroup from "react-addons-css-transition-group"
 
 
 class Tasks extends React.Component {
@@ -39,6 +40,18 @@ const TasksHeader = () => {
     )
 }
 
+const Loading = props => {
+    return (
+        <div className="loader">
+            <svg className="loader__circular">
+                <circle className="loader__circular--path" cx="50" cy="50" r="15" fill="none"
+                        strokeWidth="2" strokeMiterlimit="10">
+                </circle>
+            </svg>
+        </div>
+    )
+}
+
 class TasksCRUD extends React.Component {
     constructor(props) {
         super(props)
@@ -61,29 +74,38 @@ class TasksCRUD extends React.Component {
         const tasks = this.props.tasks
         if (tasks.result) {
             return (
-                <div>
+                <ReactCSSTransitionGroup
+                    transitionAppear={true}
+                    transitionAppearTimeout={600}
+                    transitionEnterTimeout={600}
+                    transitionLeaveTimeout={200}
+                    transitionName="slide">
                     <div>
-                        {
-                            this.state.editing
-                                ? <TaskForm
-                                    tasks={tasks}
-                                    editing={this.state.editing}
-                                    setEditing={this.setEditing}/>
-                                : ""
-                        }
+                        <div>
+                            {
+                                this.state.editing
+                                    ? <TaskForm
+                                        tasks={tasks}
+                                        editing={this.state.editing}
+                                        setEditing={this.setEditing}/>
+                                    : ""
+                            }
+                        </div>
+                        <div>
+                            {tasks.result.map(taskId => (
+                                <div key={taskId} onClick={this.setEditing(taskId)}>
+                                    {tasks.entities.tasks[taskId].name}
+                                </div>
+                            ))}
+                        </div>
+                        <button onClick={this.setEditing("new")}>Créer une tache</button>
                     </div>
-                    <div>
-                        {tasks.result.map(taskId => (
-                            <div key={taskId} onClick={this.setEditing(taskId)}>
-                                {tasks.entities.tasks[taskId].name}
-                            </div>
-                        ))}
-                    </div>
-                    <button onClick={this.setEditing("new")}>Créer une tache</button>
-                </div>
+                </ReactCSSTransitionGroup>
             )
         } else {
-            return "Chargement... "
+            return (
+                <Loading/>
+            )
         }
     }
 }
