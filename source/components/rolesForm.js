@@ -15,6 +15,12 @@ const Form = (props) => {
 
                     <div className={"form__input-block form__input-block--double"}>
                         <label className={"form__label"} htmlFor="cost">
+                            {props.user.lastname} {props.user.firstname}
+                        </label>
+                    </div>
+
+                    <div className={"form__input-block form__input-block--double"}>
+                        <label className={"form__label"} htmlFor="cost">
                             Coût horaire en €
                         </label>
                         <input
@@ -30,6 +36,32 @@ const Form = (props) => {
                         />
                         {props.errors.cost &&
                         props.touched.cost && <div className="form__error">{props.errors.cost}</div>}
+                    </div>
+
+                    <div className={"form__input-block form__input-block--double"}>
+                        <label className={"form__label"} htmlFor="job">
+                            Rôle
+                        </label>
+                        <div className="form__select-wrapper">
+                            <select
+                                name="job"
+                                value={props.values.job}
+                                onChange={props.handleChange}
+                                onBlur={props.handleBlur}
+                                className={'form__select'}>
+
+                                <option value="" disabled={true}>Rôle</option>
+                                {jobs.result.map(jobId => (
+                                    <option key={jobId} value={jobId}>
+                                        {jobs.entities.jobs[jobId].name}
+                                    </option>
+                                ))}
+
+                            </select>
+                        </div>
+                        {props.errors.job &&
+                        props.touched.job &&
+                        <div className="form__error">{props.errors.job}</div>}
                     </div>
 
                     <div className={"form__buttons"}>
@@ -239,6 +271,7 @@ class RolesForm extends React.Component {
                     onSubmit={this.handleSubmit}
                     initialValues={{
                         cost: editingRole.cost,
+                        job: editingRole.job,
                     }}
                     render={formikProps =>
                         <Form {...formikProps}
@@ -246,7 +279,8 @@ class RolesForm extends React.Component {
                               jobs={this.props.jobs}
                               setEditing={this.props.setEditing}
                               editing={this.props.editing}
-                              deleteRole={this.deleteRole}/>
+                              deleteRole={this.deleteRole}
+                              user={this.props.roles.entities.users[editingRole.user]}/>
                     }
                 />
             )

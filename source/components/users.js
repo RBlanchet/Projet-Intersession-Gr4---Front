@@ -135,7 +135,7 @@ class UsersCRUD extends React.Component {
                                             data={users.result}
                                             columns={this.columns}
                                             showPageSizeOptions={false}
-                                            defaultPageSize={10}
+                                            defaultPageSize={16}
                                             previousText={<i className="fas fa-chevron-left"></i>}
                                             nextText={<i className="fas fa-chevron-right"></i>}
                                             loadingText={'Chargement'}

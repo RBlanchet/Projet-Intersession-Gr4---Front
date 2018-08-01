@@ -59,7 +59,8 @@ class Projects extends React.Component {
             return (
                 <div className={"content"}>
                     <div className="content__header">
-                        <ProjectsHeader setEditing={this.setEditing} userJob={this.state.user.job.id}/>
+                        <ProjectsHeader setEditing={this.setEditing}
+                                        userJob={this.state.user.job.id}/>
                     </div>
                     <div className="content__inner">
                         <ProjectsCRUD
@@ -86,8 +87,9 @@ const ProjectsHeader = props => {
         return (
             <div className="content__header--space">
                 <h1 className="content__header--title" style={{margin: 0}}>Mes projets</h1>
-                <button className="content__header--button" onClick={props.setEditing("new")}><i
-                    className="fas fa-plus"></i></button>
+                <button className="content__header--button" onClick={props.setEditing("new")}>
+                    <i className="fas fa-plus"/>
+                </button>
             </div>
         )
     } else {
@@ -104,8 +106,7 @@ const Loading = props => {
         <div className="loader">
             <svg className="loader__circular">
                 <circle className="loader__circular--path" cx="50" cy="50" r="15" fill="none"
-                        strokeWidth="2" strokeMiterlimit="10">
-                </circle>
+                        strokeWidth="2" strokeMiterlimit="10"/>
             </svg>
         </div>
     )
@@ -136,8 +137,7 @@ class ProjectsCRUD extends React.Component {
         Header: 'Utilisateurs',
         accessor: id =>
             <Link to={`/projects/${id}/users`} className="nav__item-link">
-                <i className="fas fa-users nav__item-icon"/>
-                <span className={"nav__item-text"}>Gestion des utilisateurs</span>
+                <i className="fas fa-user-plus nav__item-icon"/>
             </Link>
     }, {
         id: "editTasks",
@@ -145,7 +145,6 @@ class ProjectsCRUD extends React.Component {
         accessor: id =>
             <Link to={`/projects/${id}/tasks`} className="nav__item-link">
                 <i className="fas fa-users nav__item-icon"/>
-                <span className={"nav__item-text"}>Gestion des tâches</span>
             </Link>
     }]
 
@@ -175,9 +174,9 @@ class ProjectsCRUD extends React.Component {
                                             data={projects.result}
                                             columns={this.columns}
                                             showPageSizeOptions={false}
-                                            defaultPageSize={10}
-                                            previousText={<i className="fas fa-chevron-left"></i>}
-                                            nextText={<i className="fas fa-chevron-right"></i>}
+                                            defaultPageSize={16}
+                                            previousText={<i className="fas fa-chevron-left"/>}
+                                            nextText={<i className="fas fa-chevron-right"/>}
                                             loadingText={'Chargement'}
                                             noDataText='Aucun projet trouvé'
                                             pageText='Page'
