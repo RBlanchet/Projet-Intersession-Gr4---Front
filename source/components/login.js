@@ -79,19 +79,19 @@ const LoginForm = withFormik({
     handleSubmit: (values, {setSubmitting}) => {
         apiHelpers.apiPost("auth-tokens", values).then((response) => {
 
-            setSubmitting(false)
             if (connectionHelpers.loginUser(response)) {
                 window.location += "dashboard"
-            } else {
-                console.log("connection failed")
-                // this.errors.global = "Le couple login / mot de passe ne corresponds pas"
-                swal({
-                    title: "Oups!",
-                    text: "Le mot de passse et l'email ne semblent pas correspondre!",
-                    icon: "error",
-                    button: "Ok!",
-                })
             }
+        }).catch(e => {
+            console.log("connection failed: ", e)
+            // this.errors.global = "Le couple login / mot de passe ne corresponds pas"
+            swal({
+                title: "Oups!",
+                text: "Le mot de passse et l'email ne semblent pas correspondre!",
+                icon: "error",
+                button: "Ok!",
+            })
+            setSubmitting(false)
         })
     },
     displayName: 'LoginForm', // helps with React DevTools

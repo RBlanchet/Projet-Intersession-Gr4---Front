@@ -67,7 +67,7 @@ class Projects extends React.Component {
                     <div className={"content"}>
                         <div className="content__header">
                             <ProjectsHeader setEditing={this.setEditing}
-                                        userJob={this.state.user.job.id}/>
+                                            userJob={this.state.user.job.id}/>
                         </div>
                         <div className="content__inner">
                             <ProjectsCRUD
@@ -156,14 +156,20 @@ class ProjectsCRUD extends React.Component {
             <Link to={`/projects/${id}/tasks`} className="nav__item-link">
                 <i className="fas fa-users nav__item-icon"/>
             </Link>
-    },{
+    }, {
         id: "gantt",
         Header: 'Gantt',
         accessor: id => <Link to={`/projects/${id}/gantt`}>
             <i className="fas fa-users nav_item-icon"/>
             <span className={"nav__item-text"}>Gantt</span>
         </Link>
-}]
+    }, {
+        id: "pdf",
+        Header: 'Rapport',
+        accessor: id => <a href={`/projects/pdf/${id}`} target='_blank'>
+            <i className="fas fa-users nav_item-icon"/>
+        </a>
+    }]
 
     render() {
         const projects = this.props.projects
@@ -207,7 +213,7 @@ class ProjectsCRUD extends React.Component {
                                                 if (userJob === 1 || userJob === 2) {
                                                     return {
                                                         onClick: (e) => {
-                                                            if (rowInfo && ["editUsers"].indexOf(cellInfo.id) === -1) {
+                                                            if (rowInfo && ["editUsers", "editTasks", "gantt", "pdf"].indexOf(cellInfo.id) === -1) {
                                                                 this.props.setEditing(rowInfo.original)(e)
                                                             }
                                                         }
