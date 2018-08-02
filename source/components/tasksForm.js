@@ -205,17 +205,17 @@ class TasksForm extends React.Component {
     handleSubmit(values, {setSubmitting}) {
         const projectId = this.projectId
         const changed = diff(this.initialValues, values)
-        const users = changed.users
-        changed.users = []
-        changed.start_at += "T00:00:00+00:00"
-        changed.end_at += "T00:00:00+00:00"
-        console.log(changed, users)
-        users.map(user => {
-            changed.users.push(user.value)
-        })
+        if (changed.users) {
+            const users = values.users
+            changed.users = []
+            console.log(changed, users)
+            users.map(user => {
+                changed.users.push(user.value)
+            })
+        }
         if (this.editing === "new") {
             apiHelpers.apiPost(`project/${projectId}/tasks`, changed).then(response => {
-                if (response.status === 201) {
+                if (response.status < 300) {
                     this.setEditing(false)()
                 } else {
                     // TODO: error feedback
@@ -224,7 +224,7 @@ class TasksForm extends React.Component {
             })
         } else {
             apiHelpers.apiPatch("tasks", changed, this.editing).then(response => {
-                if (response.status === 201) {
+                if (response.status < 300) {
                     this.setEditing(false)()
                 } else {
                     // TODO: error feedback
@@ -247,14 +247,16 @@ class TasksForm extends React.Component {
     render() {
 
         let editingTask
-        let taskUsers
+        let taskUsers = []
         if (this.props.editing === "new") {
             editingTask = false
-            taskUsers = []
         } else {
             editingTask = this.props.tasks.entities.tasks[this.props.editing]
-            console.log(editingTask.users)
-            // TODO: FUCK SOME FUCKING MORMONS!
+            console.log(editingTask)
+            editingTask.users.map(userId => {
+                const user = this.props.tasks.entities.users[userId]
+                taskUsers.push({value: user.id, label: `${user.firstname} ${user.lastname}`})
+            })
         }
         return (
             <div>
@@ -282,13 +284,13 @@ class TasksForm extends React.Component {
                     onSubmit={this.handleSubmit}
                     initialValues={{
                         name: editingTask.name,
-                        start_at: editingTask.start_at ? editingTask.start_at.substr(0, 10) : "",
-                        end_at: editingTask.end_at ? editingTask.end_at.substr(0, 10) : "",
+                        start_at: editingTask.startAt ? editingTask.startAt.substr(0, 10) : "",
+                        end_at: editingTask.endAt ? editingTask.endAt.substr(0, 10) : "",
                         cost: editingTask.cost,
                         time_spend: editingTask.time_spend,
                         description: editingTask.description,
                         status: editingTask.status,
-                        // users: [{label: "Admin Admin", value: 1}]
+                        users: taskUsers,
                     }}
                     render={formikProps =>
                         <Form {...formikProps} displayName={"TasksInnerForm"}
