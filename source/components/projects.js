@@ -123,7 +123,21 @@ const Loading = props => {
 }
 
 class ProjectsCRUD extends React.Component {
+    download(id){
+        apiHelpers.apiPDF(`projects/pdf`, id)
+            .then(response => {
+                const url = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+                link.href = url
+                link.setAttribute('download', 'file.pdf')
+                document.body.appendChild(link)
+                link.click()
 
+        })
+            .catch(error =>{
+                console.log(error)
+            })
+    }
     columns = [{
         id: "name",
         Header: 'Nom',
@@ -165,11 +179,10 @@ class ProjectsCRUD extends React.Component {
     }, {
         id: "pdf",
         Header: 'Rapport',
-        accessor: id => <a href={`/projects/pdf/${id}`} target='_blank' className="nav__item-link nav__item-rapport">
+        accessor: id => <a target='_blank' onClick={()=>{this.download(id)}} className="nav__item-link nav__item-rapport">
             <i className="fas fa-file-export"></i>
         </a>
     }]
-
     render() {
         const projects = this.props.projects
         const userJob = this.props.userJob

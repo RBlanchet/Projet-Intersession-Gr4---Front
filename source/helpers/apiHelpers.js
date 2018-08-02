@@ -24,6 +24,21 @@ function getHeaders() {
         }
     }
 }
+function getHeadersPDF() {
+    const token = storage.getItem("Auth-Token")
+    if (token) {
+        return {
+            "content-type": "application/pdf",
+            "X-Auth-Token": token,
+            Accept: "application/pdf",
+
+        }
+    } else {
+        return {
+            "content-type": "application/json"
+        }
+    }
+}
 
 function withoutPayload(method, endpoint, id = "") {
     const url = getUrl(endpoint, id)
@@ -33,9 +48,21 @@ function withoutPayload(method, endpoint, id = "") {
         headers: getHeaders()
     })
 }
+function withoutPayloadPDF(method, endpoint, id = "") {
+    const url = getUrl(endpoint, id)
+    return axios({
+        method: method,
+        responseType: 'blob',
+        url: url,
+        headers: getHeadersPDF()
+    })
+}
 
 function apiGet(endpoint, id = '') {
     return withoutPayload('get', endpoint, id)
+}
+function apiPDF(endpoint, id = ''){
+    return withoutPayloadPDF('get', endpoint, id)
 }
 
 function apiDelete(endpoint, id = '') {
@@ -88,6 +115,7 @@ const apiHelpers = {
     "apiPost": apiPost,
     "apiPatch": apiPatch,
     "apiPut": apiPut,
+    "apiPDF" : apiPDF,
 }
 
 export default apiHelpers
