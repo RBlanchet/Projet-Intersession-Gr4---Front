@@ -72,6 +72,18 @@ class Roles extends React.Component {
     }
 }
 
+const Loading = props => {
+    return (
+        <div className="loader">
+            <svg className="loader__circular">
+                <circle className="loader__circular--path" cx="50" cy="50" r="15" fill="none"
+                        strokeWidth="2" strokeMiterlimit="10">
+                </circle>
+            </svg>
+        </div>
+    )
+}
+
 const RolesHeader = props => {
     return (
         <div className="content__header--space">
@@ -170,7 +182,21 @@ class RolesCRUD extends React.Component {
                 </div>
             )
         } else {
-            return "Chargement... "
+            return (
+                <div>
+                    <div>
+                        <div className="row">
+                            <div className="row__col-100">
+                                <div className="card card__lg">
+                                    <div className="content__inner">
+                                        <Loading/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
         }
     }
 

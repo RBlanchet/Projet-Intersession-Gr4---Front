@@ -10,6 +10,7 @@ import Gantt from "./gantt"
 import Toolbar from './toolbar'
 import MessageArea from './messageArea'
 import './App.css'
+import swal from "sweetalert"
 
 
 export default class ProjectGantt extends React.Component {
@@ -21,49 +22,60 @@ export default class ProjectGantt extends React.Component {
             users: false,
             editing: false,
         }
-        this.handleZoomChange = this.handleZoomChange.bind(this);
-        this.logTaskUpdate = this.logTaskUpdate.bind(this);
-        this.logLinkUpdate = this.logLinkUpdate.bind(this);
+        this.handleZoomChange = this.handleZoomChange.bind(this)
+        this.logTaskUpdate = this.logTaskUpdate.bind(this)
+        this.logLinkUpdate = this.logLinkUpdate.bind(this)
     }
 
     componentDidMount() {
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/tasks`).then((response) => {
             this.setState({tasks: response.data})
         })
-        apiHelpers.apiGet(`projects/${this.props.match.params.id}`).then((response) => {
-            this.setState({project: response.data})
-        })
+        apiHelpers.apiGet(`projects/${this.props.match.params.id}`)
+            .then((response) => {
+                this.setState({project: response.data})
+            })
+            .catch((r) => {
+                swal({
+                    title: "Désolé !",
+                    text: "Le projet est desactivé",
+                    icon: "error",
+                    button: "Ok!",
+                })
+                window.location.hash = "#/projects"
+            })
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/users`).then((response) => {
             this.setState({users: response.data})
         })
     }
+
     handleZoomChange(zoom) {
         this.setState({
             currentZoom: zoom
-        });
+        })
     }
 
     addMessage(message) {
-        var messages = this.state.messages.slice();
-        var prevKey = messages.length ? messages[0].key: 0;
+        var messages = this.state.messages.slice()
+        var prevKey = messages.length ? messages[0].key : 0
 
-        messages.unshift({key: prevKey + 1, message});
-        if(messages.length > 40){
-            messages.pop();
+        messages.unshift({key: prevKey + 1, message})
+        if (messages.length > 40) {
+            messages.pop()
         }
-        this.setState({messages});
+        this.setState({messages})
     }
 
     logTaskUpdate(id, mode, task) {
-        let text = task && task.text ? ` (${task.text})`: '';
-        let message = `Task ${mode}: ${id} ${text}`;
-        this.addMessage(message);
+        let text = task && task.text ? ` (${task.text})` : ''
+        let message = `Task ${mode}: ${id} ${text}`
+        this.addMessage(message)
     }
 
     logLinkUpdate(id, mode, link) {
-        let message = `Link ${mode}: ${id}`;
+        let message = `Link ${mode}: ${id}`
         if (link) {
-            message += ` ( source: ${link.source}, target: ${link.target} )`;
+            message += ` ( source: ${link.source}, target: ${link.target} )`
         }
         this.addMessage(message)
     }
@@ -74,9 +86,9 @@ export default class ProjectGantt extends React.Component {
         const users = this.state.users
         var data = {data: [], links: []}
         var projectUsers = []
-        if (users){
+        if (users) {
 
-            users.map((user, i) =>{
+            users.map((user, i) => {
                 projectUsers.push({
                     key: user.id,
                     label: user.firstname + " " + user.lastname
@@ -84,18 +96,15 @@ export default class ProjectGantt extends React.Component {
             })
             gantt.serverList("users", projectUsers)
         }
-        if(project){
-
-        }
-        if (tasks) {
+        if (tasks && project) {
             tasks.map(function (task, i) {
-                data.data.push( {
+                data.data.push({
                     id: task.id,
                     text: task.name,
                     start_date: new Date(task.startAt),
                     end_date: new Date(task.endAt),
                     duration: task.timeSpend,
-                    progress: task.status.percentage /100,
+                    progress: task.status.percentage / 100,
                     users: task.users,
                     cost: task.cost,
                 })
@@ -107,44 +116,56 @@ export default class ProjectGantt extends React.Component {
                 })
             })
             return (
-                <div>
-                    <Toolbar
-                        zoom={this.state.currentZoom}
-                        onZoomChange={this.handleZoomChange}
-                    />
-                    <div className="gantt-container">
-                        <Gantt
-                            tasks={data}
-                            zoom={this.state.currentZoom}
-                            onTaskUpdated={this.logTaskUpdate}
-                            onLinkUpdated={this.logLinkUpdate}
-                        />
+                <div className={"content"}>
+                    <div className="content__header">
+                        <GanttHeader setEditing={this.setEditing} project={this.state.project}/>
                     </div>
-                    <MessageArea
-                        messages={this.state.messages}
-                    />
+                    <div className="content__inner">
+                        <div className="row">
+                            <div className="row__col-100">
+                                <div className="card card__lg">
+                                    <div className="content__inner">
+                                        <Toolbar
+                                            zoom={this.state.currentZoom}
+                                            onZoomChange={this.handleZoomChange}
+                                        />
+                                        <div className="gantt-container">
+                                            <Gantt
+                                                tasks={data}
+                                                zoom={this.state.currentZoom}
+                                                onTaskUpdated={this.logTaskUpdate}
+                                                onLinkUpdated={this.logLinkUpdate}
+                                            />
+                                        </div>
+                                        <MessageArea
+                                            messages={this.state.messages}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             )
         }
         else {
             return (
-                <div>
+                <div className={"content"}>
                     <div className="content__header">
-
+                        <Loading/>
                     </div>
-                    <ReactTable
-                        data={[]}
-                        columns={[]}
-                        showPageSizeOptions={false}
-                        defaultPageSize={10}
-                        previousText={'Précedent'}
-                        nextText={'Suivant'}
-                        loadingText={'Chargement'}
-                        noDataText='Aucun tache trouvé'
-                        pageText='Page'
-                        ofText='sur'
-                        rowsText='lignes'
-                    />
+                    <div className="content__inner">
+                        <div className="row">
+                            <div className="row__col-100">
+                                <div className="card card__lg">
+                                    <div className="content__inner">
+                                        <Loading/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )
         }
@@ -152,14 +173,28 @@ export default class ProjectGantt extends React.Component {
     }
 }
 
+const Loading = props => {
+    return (
+        <div className="loader">
+            <svg className="loader__circular">
+                <circle className="loader__circular--path" cx="50" cy="50" r="15" fill="none"
+                        strokeWidth="2" strokeMiterlimit="10">
+                </circle>
+            </svg>
+        </div>
+    )
+}
+
 
 const GanttHeader = props => {
     return (
-        <div>
-            <h1 style={{margin: 0}}>Participants au projet : {'toto'}</h1>
-            <Link to={"/projects"}>
-                Retour aux projets
-            </Link>
+        <div className="content__header--space">
+            <h1 className="content__header--title" style={{margin: 0}}>Participants au projet <i>{props.project.name}</i></h1>
+            <div className="content__header--buttons">
+                <Link to={"/projects"} className="content__header--button">
+                    <i className="fas fa-arrow-left"/>
+                </Link>
+            </div>
         </div>
     )
 }
