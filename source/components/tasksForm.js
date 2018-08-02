@@ -219,7 +219,7 @@ class TasksForm extends React.Component {
             })
         }
         if (this.editing === "new") {
-            apiHelpers.apiPost(`project/${projectId}/tasks`, changed).then(response => {
+            apiHelpers.apiPost(`projects/${projectId}/tasks`, changed).then(response => {
                 this.setEditing(false)()
             }).catch((r) => {
                 console.log(r)
