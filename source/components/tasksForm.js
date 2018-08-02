@@ -42,7 +42,7 @@ const Form = (props) => {
                     </div>
 
                     <div className={"form__input-block"}>
-                        <label htmlFor="name" className={"form__label"}>
+                        <label htmlFor="start_at" className={"form__label"}>
                             Date de début
                         </label>
                         <input
@@ -62,7 +62,7 @@ const Form = (props) => {
                     </div>
 
                     <div className={"form__input-block"}>
-                        <label htmlFor="name" className={"form__label"}>
+                        <label htmlFor="end_at" className={"form__label"}>
                             Date de fin
                         </label>
                         <input
@@ -82,7 +82,7 @@ const Form = (props) => {
                     </div>
 
                     <div className={"form__input-block"}>
-                        <label htmlFor="name" style={{display: 'block'}}>
+                        <label htmlFor="description" style={{display: 'block'}}>
                             Description de la tache
                         </label>
                         <textarea
@@ -102,7 +102,7 @@ const Form = (props) => {
 
 
                     <div className={"form__input-block"}>
-                        <label htmlFor="name" style={{display: 'block'}}>
+                        <label htmlFor="status" style={{display: 'block'}}>
                             Statut de la tache
                         </label>
                         <select
@@ -124,7 +124,7 @@ const Form = (props) => {
                         <div className="input-feedback">{props.errors.status}</div>}
                     </div>
                     <div className={"form__input-block"}>
-                        <label htmlFor="name" style={{display: 'block'}}>
+                        <label htmlFor="cost" style={{display: 'block'}}>
                             Prix de la tache
                         </label>
                         <input
@@ -158,8 +158,8 @@ const Form = (props) => {
                     </div>
 
                     <div className={"form__input-block form__input-block--double"}>
-                        <label htmlFor="name" className={"form__label"}>
-                            Heure alloué à la tache
+                        <label htmlFor="time_spend" className={"form__label"}>
+                            Heures allouées à la tache
                         </label>
                         <input
                             id="time_spend"
@@ -205,11 +205,15 @@ class TasksForm extends React.Component {
     handleSubmit(values, {setSubmitting}) {
         const projectId = this.projectId
         const changed = diff(this.initialValues, values)
-
+        const users = changed.users
+        changed.users = []
+        changed.start_at += "T00:00:00+00:00"
+        changed.end_at += "T00:00:00+00:00"
+        console.log(changed, users)
+        users.map(user => {
+            changed.users.push(user.value)
+        })
         if (this.editing === "new") {
-            const userId = changed.user
-            delete changed.user
-            changed.project = this.projectId
             apiHelpers.apiPost(`project/${projectId}/tasks`, changed).then(response => {
                 if (response.status === 201) {
                     this.setEditing(false)()
@@ -243,11 +247,14 @@ class TasksForm extends React.Component {
     render() {
 
         let editingTask
+        let taskUsers
         if (this.props.editing === "new") {
             editingTask = false
+            taskUsers = []
         } else {
             editingTask = this.props.tasks.entities.tasks[this.props.editing]
-            console.log(editingTask)
+            console.log(editingTask.users)
+            // TODO: FUCK SOME FUCKING MORMONS!
         }
         return (
             <div>
@@ -275,10 +282,10 @@ class TasksForm extends React.Component {
                     onSubmit={this.handleSubmit}
                     initialValues={{
                         name: editingTask.name,
-                        start_at: editingTask.start_at ? editingTask.start_at.substr(0, 10) : null,
-                        end_at: editingTask.end_at ? editingTask.end_at.substr(0, 10) : null,
+                        start_at: editingTask.start_at ? editingTask.start_at.substr(0, 10) : "",
+                        end_at: editingTask.end_at ? editingTask.end_at.substr(0, 10) : "",
                         cost: editingTask.cost,
-                        time_spend: editingTask.hour_spend,
+                        time_spend: editingTask.time_spend,
                         description: editingTask.description,
                         status: editingTask.status,
                         // users: [{label: "Admin Admin", value: 1}]
