@@ -9,6 +9,8 @@ import ReactTable from "react-table"
 import {taskStatus} from "../schemas/schemas"
 import styled from "styled-components"
 import ReactCSSTransitionGroup from "react-addons-css-transition-group"
+import UsersForm from "./usersForm"
+import jobSchema from "../schemas/jobs"
 
 function daysToMilliseconds(days) {
     return days * 24 * 60 * 60 * 1000
@@ -78,7 +80,27 @@ class Dashboard extends React.Component {
             projects: false,
             user: false,
             tasks: false,
-            tasksStatus: false
+            tasksStatus: false,
+            editing: false,
+            jobs: false
+
+        }
+        this.setEditing = this.setEditing.bind(this)
+
+    }
+
+    setEditing(id) {
+        return (e) => {
+            this.setState({editing: false})
+            setTimeout(() => {
+                this.setState({editing: id})
+            }, 1)
+            if (!id) {
+                this.reloadProjects()
+            }
+            if (e) {
+                e.stopPropagation()
+            }
         }
     }
 
@@ -93,6 +115,27 @@ class Dashboard extends React.Component {
             })
             apiHelpers.apiGet("users/" + response.data.id + "/tasks-status").then((response) => {
                 this.setState({tasksStatus: response.data})
+            })
+            apiHelpers.apiGet("jobs").then((response) => {
+                this.setState({jobs: normalize(response.data, jobSchema)})
+            })
+        })
+    }
+
+    reloadProjects() {
+        apiHelpers.apiGet("me").then((response) => {
+            this.setState({user: response.data})
+            apiHelpers.apiGet("users/" + response.data.id + "/projects").then((response) => {
+                this.setState({projects: normalize(response.data, projectSchema)})
+            })
+            apiHelpers.apiGet("users/" + response.data.id + "/tasks").then((response) => {
+                this.setState({tasks: normalize(response.data, taskSchema)})
+            })
+            apiHelpers.apiGet("users/" + response.data.id + "/tasks-status").then((response) => {
+                this.setState({tasksStatus: response.data})
+            })
+            apiHelpers.apiGet("jobs").then((response) => {
+                this.setState({jobs: normalize(response.data, jobSchema)})
             })
         })
     }
@@ -122,6 +165,10 @@ class Dashboard extends React.Component {
                                 projects={this.state.projects}
                                 tasks={this.state.tasks}
                                 tasksStatus={this.state.tasksStatus}
+                                user={this.state.user}
+                                editing={this.state.editing}
+                                jobs={this.state.jobs}
+                                setEditing={this.setEditing}
                             />
                         </div>
                     </div>
@@ -148,64 +195,102 @@ class DashBoardCard extends React.Component {
         const projects = this.props.projects
         const tasks = this.props.tasks
         const tasksStatus = this.props.tasksStatus
+        const user = this.props.user
+        const jobs = this.props.jobs
 
-        if (typeof tasks.entities !== 'undefined' && typeof projects.entities !== 'undefined') {
+        if (typeof tasks.entities !== 'undefined' && typeof projects.entities !== 'undefined' && typeof user !== 'undefined' && typeof jobs !== 'undefined') {
             return (
-                <div className="row">
-                    <div className="row__col-50">
-                        <Card
-                            title={"Mes projets"}
-                            data={projects.result}
-                            entities={projects.entities.projects}
-                            type={"tasks"}
-                        />
+                <div>
+                    <div>
+                        {this.props.editing
+                            ? <UsersForm
+                                users={user}
+                                jobs={jobs}
+                                editing={this.props.editing}
+                                setEditing={this.props.setEditing}
+                                type={"editing-profile"}/>
+                            : ""
+                        }
                     </div>
-                    <div className="row__col-50">
-                        <Card
-                            title={"Mes tâches"}
-                            data={tasks.result}
-                            entities={tasks.entities.tasks}
-                            type={"projects"}
-                        />
+                    <div className="row">
+                        <div className="row__col-50">
+                            <Card
+                                title={"Mes projets"}
+                                data={projects.result}
+                                entities={projects.entities.projects}
+                                type={"projects"}
+                            />
+                        </div>
+                        <div className="row__col-50">
+                            <Card
+                                title={"Mes tâches"}
+                                data={tasks.result}
+                                entities={tasks.entities.tasks}
+                                type={"tasks"}
+                            />
+                        </div>
+                        <div className="row__col-50">
+                            <CardPieCharts
+                                title={"Activités des tâches"}
+                                data={tasks.result}
+                                entities={tasks.entities.tasks}
+                                type={"tasks-charts"}
+                                tasksStatus={tasksStatus}
+                            />
+                        </div>
                     </div>
-                    <div className="row__col-50">
-                        <CardPieCharts
-                            title={"Activités des tâches"}
-                            data={tasks.result}
-                            entities={tasks.entities.tasks}
-                            type={"tasks-charts"}
-                            tasksStatus={tasksStatus}
-                        />
+                    <div className="row">
+                        <div className="row__col-100">
+                            <Card
+                                title={"Mon profil"}
+                                data={user}
+                                entities={false}
+                                type={"user"}
+                                setEditing={this.props.setEditing}
+                            />
+                        </div>
                     </div>
                 </div>
             )
         } else {
             return (
-                <div className="row">
-                    <div className="row__col-50">
-                        <Card
-                            title={"Mes projets"}
-                            data={projects.result}
-                            entities={false}
-                            type={"projects"}
-                        />
+                <div>
+                    <div className="row">
+                        <div className="row__col-50">
+                            <Card
+                                title={"Mes projets"}
+                                data={false}
+                                entities={false}
+                                type={"projects"}
+                            />
+                        </div>
+                        <div className="row__col-50">
+                            <Card
+                                title={"Mes tâches"}
+                                data={false}
+                                entities={false}
+                                type={"tasks"}
+                            />
+                        </div>
+                        <div className="row__col-50">
+                            <CardPieCharts
+                                title={"Activités des tâches"}
+                                data={false}
+                                entities={false}
+                                type={"tasks-charts"}
+                                tasksStatus={tasksStatus}
+                            />
+                        </div>
                     </div>
-                    <div className="row__col-50">
-                        <Card
-                            title={"Mes tâches"}
-                            data={tasks.result}
-                            entities={false}
-                            type={"tasks"}
-                        />
-                    </div>
-                    <div className="row__col-50">
-                        <CardPieCharts
-                            title={"Activités des tâches"}
-                            data={tasks.result}
-                            entities={false}
-                            type={"tasks-charts"}
-                            tasksStatus={tasksStatus}
-                        />
+                    <div className="row">
+                        <div className="row__col-100">
+                            <Card
+                                title={"Mon profil"}
+                                data={false}
+                                entities={false}
+                                type={"user"}
+                            />
+                        </div>
                     </div>
                 </div>
             )
@@ -218,89 +303,88 @@ class DashBoardCard extends React.Component {
 class Card extends React.Component {
     constructor(props) {
         super(props)
-        if (props.type == 'tasks') {
-            this.columns = [
-                {
-                    id: "name",
-                    Header: 'Nom de la tache',
-                    accessor: id => this.props.entities[id].name
-                }]
-        } else if (props.type == 'projects') {
-            this.columns = [{
-                id: "name",
-                Header: 'Nom',
-                accessor: id => this.props.entities[id].name
-            }]
-        } else if (props.type == 'tasks-charts') {
-            this.pieOptions = [{
-                title: "",
-                pieHole: 0.6,
-                slices: [
-                    {
-                        color: "#2BB673"
-                    },
-                    {
-                        color: "#d91e48"
-                    },
-                    {
-                        color: "#007fad"
-                    },
-                    {
-                        color: "#e9a227"
-                    }
-                ],
-                legend: {
-                    position: "bottom",
-                    alignment: "center",
-                    textStyle: {
-                        color: "233238",
-                        fontSize: 14
-                    }
-                },
-                tooltip: {
-                    showColorCode: true
-                },
-                chartArea: {
-                    left: 0,
-                    top: 0,
-                    width: "100%",
-                    height: "80%"
-                },
-                fontName: "Roboto"
-            }]
-        }
-
     }
 
     render() {
         if (this.props.entities) {
-            if (this.props.type != 'tasks-charts') {
+            this.columns = [
+                {
+                    id: "name",
+                    Header: 'Nom',
+                    accessor: id => this.props.entities[id].name
+                }]
+        }
+        if (this.props.entities && this.props.data && this.columns) {
+            return (
+                <div className="card">
+                    <div className="card__header">
+                        <h2 className="card__header--title">{this.props.title}</h2>
+                    </div>
+                    <div className="card__body">
+                        <ReactTable
+                            data={this.props.data}
+                            columns={this.columns}
+                            showPageSizeOptions={false}
+                            defaultPageSize={5}
+                            previousText={<i className="fas fa-chevron-left"></i>}
+                            nextText={<i className="fas fa-chevron-right"></i>}
+                            loadingText={'Chargement'}
+                            noDataText='Aucun projet trouvé'
+                            pageText='Page'
+                            ofText='sur '
+                            rowsText='lignes'
+                            defaultSorted={[{
+                                id: 'name'
+                            }]}
+
+                            getTdProps={(state, rowInfo, cellInfo) => {
+                                return false
+                            }}
+                        />
+                    </div>
+                </div>
+            )
+        } else if (this.props.type == 'user' && this.props.data) {
+            return (
+                <div className="card card__profile">
+                    <div className="card__header">
+                        <h2 className="card__header--title">{this.props.title}</h2>
+                    </div>
+                    <div className="card__body card__body--height">
+                        <div className="row">
+                            <div className="row__col-50 flex flex__align-center flex__justify-content profile__icon">
+                                <i className="far fa-user"></i>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="row__col-50">
+                                <div className="row">
+                                    <div className="row__col-50">
+                                        <p>Prenom : {this.props.data.lastname}</p>
+                                        <p>Nom : {this.props.data.firstname}</p>
+                                        <p>Email : {this.props.data.email}</p>
+                                        <p>Job : {this.props.data.job.name}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row__col-50 flex flex__justify-content flex__align-center">
+                            <button className="content__header--button" onClick={this.props.setEditing(this.props.data.id)}>
+                                <i className="fas fa-user-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )
+        } else {
+            if (this.props.type == 'user') {
                 return (
-                    <div className="card">
+                    <div className="card card__profile">
                         <div className="card__header">
                             <h2 className="card__header--title">{this.props.title}</h2>
                         </div>
                         <div className="card__body">
-                            <ReactTable
-                                data={this.props.data}
-                                columns={this.columns}
-                                showPageSizeOptions={false}
-                                defaultPageSize={5}
-                                previousText={<i className="fas fa-chevron-left"></i>}
-                                nextText={<i className="fas fa-chevron-right"></i>}
-                                loadingText={'Chargement'}
-                                noDataText='Aucun projet trouvé'
-                                pageText='Page'
-                                ofText='sur '
-                                rowsText='lignes'
-                                defaultSorted={[{
-                                    id: 'name'
-                                }]}
-
-                                getTdProps={(state, rowInfo, cellInfo) => {
-                                    return false
-                                }}
-                            />
+                            <Loading/>
                         </div>
                     </div>
                 )
@@ -311,30 +395,11 @@ class Card extends React.Component {
                             <h2 className="card__header--title">{this.props.title}</h2>
                         </div>
                         <div className="card__body">
-                            <Chart
-                                chartType="PieChart"
-                                data={[["Age", "Weight"], ["Age", 12], ["Caca", 5.5]]}
-                                options={this.pieOptions}
-                                graph_id="PieChart"
-                                width={"100%"}
-                                height={"239px"}
-                                legend_toggle
-                            />
+                            <Loading/>
                         </div>
                     </div>
                 )
             }
-        } else {
-            return (
-                <div className="card">
-                    <div className="card__header">
-                        <h2 className="card__header--title">{this.props.title}</h2>
-                    </div>
-                    <div className="card__body">
-                        <Loading/>
-                    </div>
-                </div>
-            )
         }
     }
 }
@@ -392,11 +457,10 @@ class CardPieCharts extends React.Component {
                         <Chart
                             chartType="PieChart"
                             data={[["Label", "Value"], tasksStatus.data[1], tasksStatus.data[2], tasksStatus.data[3], tasksStatus.data[4]]}
-                            // data={[["En Cours", "A faire", "Finit", "Validée"], ["En Cours", 4], ["A faire", 4], ["Finit", 4], ["Validée", 4]]}
                             options={this.pieOptions}
                             graph_id="PieChart"
                             width={"100%"}
-                            height={"239px"}
+                            height={"240px"}
                             legend_toggle
                         />
                     </div>

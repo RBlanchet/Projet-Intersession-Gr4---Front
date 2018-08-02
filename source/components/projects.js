@@ -146,22 +146,21 @@ class ProjectsCRUD extends React.Component {
         id: "editUsers",
         Header: 'Utilisateurs',
         accessor: id =>
-            <Link to={`/projects/${id}/users`} className="nav__item-link">
+            <Link to={`/projects/${id}/users`} className="nav__item-link nav__item-user">
                 <i className="fas fa-user-plus nav__item-icon"/>
             </Link>
     }, {
         id: "editTasks",
         Header: 'Tâches',
         accessor: id =>
-            <Link to={`/projects/${id}/tasks`} className="nav__item-link">
+            <Link to={`/projects/${id}/tasks`} className="nav__item-link nav__item-task">
                 <i className="fas fa-users nav__item-icon"/>
             </Link>
     },{
         id: "gantt",
         Header: 'Gantt',
-        accessor: id => <Link to={`/projects/${id}/gantt`}>
+        accessor: id => <Link to={`/projects/${id}/gantt`} className="nav__item-link nav__item-gantt">
             <i className="fas fa-users nav_item-icon"/>
-            <span className={"nav__item-text"}>Gantt</span>
         </Link>
 }]
 

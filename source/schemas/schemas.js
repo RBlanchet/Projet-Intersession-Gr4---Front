@@ -21,7 +21,8 @@ role = new schema.Entity("roles", {
 })
 
 task = new schema.Entity("tasks", {
-    status: status
+    status: status,
+    users: [user]
 })
 
 

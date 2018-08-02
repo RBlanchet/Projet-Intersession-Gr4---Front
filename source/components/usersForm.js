@@ -3,6 +3,26 @@ import {string, object, number, ref} from 'yup'
 import {Formik} from 'formik'
 import {diff} from 'deep-object-diff'
 import apiHelpers from "../helpers/apiHelpers"
+import swal from "sweetalert"
+
+const Button = (props) => {
+    console.log(props.editing)
+    if (props.editing !== "new" && props.editing !== "editing-profile" ) {
+        return (
+            <button className={"form__button form__button--red"}
+                    onClick={props.deleteUser(props.editing)} type="button">
+                Supprimer
+            </button>
+        )
+    } else  {
+        return (
+            <button className={"form__button form__button--red"} onClick={props.setEditing(false)}
+                    type="button">
+                Annuler
+            </button>
+        )
+    }
+}
 
 const Form = (props) => {
     const jobs = props.jobs
@@ -132,15 +152,7 @@ const Form = (props) => {
                         <button className={"form__button"} type="submit" disabled={props.isSubmitting}>
                             Valider
                         </button>
-                        {props.editing !== "new"
-                            ? <button className={"form__button form__button--red"}
-                                      onClick={props.deleteUser(props.editing)} type="button">
-                                Supprimer
-                            </button>
-                            : <button className={"form__button form__button--red"} onClick={props.setEditing(false)}
-                                      type="button">
-                                Annuler
-                            </button>}
+                        <Button editing={props.editing} setEditing={props.setEditing} deleteUser={props.deleteUser}/>
                     </div>
 
                 </form>
@@ -164,27 +176,31 @@ class UsersForm extends React.Component {
         delete changed.plainPasswordConfirm
         if (this.editing !== "new") {
             apiHelpers.apiPatch("users", changed, this.editing).then(response => {
-                if (response.status === 200) {
-                    this.setEditing(false)()
-                } else {
-                    // TODO: error feedback
-                    setSubmitting(false)
-                }
+                this.setEditing(false)()
+            }).catch((r) => {
+                console.log(r)
+                swal({
+                    title: "Oups!",
+                    text: "Une erreur est survenue!",
+                    icon: "error",
+                    button: "Ok!",
+                })
+                setSubmitting(false)
             })
         } else {
 
-            if (changed.plainPassword) {
-                apiHelpers.apiPost("users", changed).then(response => {
-                    if (response.status === 201) {
-                        this.setEditing(false)()
-                    } else {
-                        // TODO: error feedback
-                        setSubmitting(false)
-                    }
+            apiHelpers.apiPost("users", changed).then(response => {
+                this.setEditing(false)()
+            }).catch((r) => {
+                console.log(r)
+                swal({
+                    title: "Oups!",
+                    text: "Une erreur est survenue!",
+                    icon: "error",
+                    button: "Ok!",
                 })
-            } else {
-                // TODO error feedback
-            }
+                setSubmitting(false)
+            })
             setSubmitting(false)
         }
     }
@@ -198,12 +214,17 @@ class UsersForm extends React.Component {
     }
 
     render() {
-
+        let editing = this.props.editing
         let editingUser
         if (this.props.editing === "new") {
             editingUser = false
         } else {
-            editingUser = this.props.users.entities.users[this.props.editing]
+            if (!this.props.users.entities) {
+                editingUser = this.props.users
+                editing = "editing-profile"
+            } else {
+                editingUser = this.props.users.entities.users[this.props.editing]
+            }
         }
         return (
             <Formik
@@ -233,8 +254,9 @@ class UsersForm extends React.Component {
                           displayName={"UsersInnerForm"}
                           jobs={this.props.jobs}
                           setEditing={this.props.setEditing}
-                          editing={this.props.editing}
-                          deleteUser={this.deleteUser}/>
+                          editing={editing}
+                          deleteUser={this.deleteUser}
+                    />
                 }
             />
         )

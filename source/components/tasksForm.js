@@ -4,6 +4,7 @@ import {Formik} from 'formik'
 import {diff} from 'deep-object-diff'
 import apiHelpers from "../helpers/apiHelpers"
 import Select from './select'
+import swal from "sweetalert"
 
 const Form = (props) => {
 
@@ -21,7 +22,8 @@ const Form = (props) => {
                 e.stopPropagation()
             }}>
                 <form onSubmit={props.handleSubmit} className={"form"}>
-                    <div className={"form__input-block form__input-block--double"}>
+
+                    <div className={"form__input-block"}>
                         <label htmlFor="name" style={{display: 'block'}}>
                             Nom de la tache
                         </label>
@@ -33,16 +35,40 @@ const Form = (props) => {
                             onChange={props.handleChange}
                             onBlur={props.handleBlur}
                             className={props.errors.name && props.touched.name
-                                ? 'text-input error'
-                                : 'text-input'}
+                                ? 'form__text form__text--error'
+                                : 'form__text'}
                         />
                         {props.errors.name &&
                         props.touched.name &&
-                        <div className="input-feedback">{props.errors.name}</div>}
+                        <div className="form__error">{props.errors.name}</div>}
                     </div>
 
                     <div className={"form__input-block"}>
-                        <label htmlFor="name" className={"form__label"}>
+                        <label htmlFor="description" style={{display: 'block'}}>
+                            Description de la tache
+                        </label>
+                        <textarea
+                            id="description"
+                            placeholder="Description"
+                            value={props.values.description}
+                            onChange={props.handleChange}
+                            onBlur={props.handleBlur}
+                            style={{
+                                resize: 'none'
+                            }}
+                            rows={1}
+                            className={props.errors.description && props.touched.description
+                                ? 'form__text form__text--error'
+                                : 'form__text'}
+                        />
+                        {props.errors.description &&
+                        props.touched.description &&
+                        <div className="form__error">{props.errors.description}</div>}
+                    </div>
+
+
+                    <div className={"form__input-block"}>
+                        <label htmlFor="start_at" className={"form__label"}>
                             Date de début
                         </label>
                         <input
@@ -53,8 +79,8 @@ const Form = (props) => {
                             onChange={props.handleChange}
                             onBlur={props.handleBlur}
                             className={props.errors.start_at && props.touched.start_at
-                                ? 'text-input error'
-                                : 'text-input'}
+                                ? 'form__text form__text--error'
+                                : 'form__text'}
                         />
                         {props.errors.start_at &&
                         props.touched.start_at &&
@@ -62,7 +88,7 @@ const Form = (props) => {
                     </div>
 
                     <div className={"form__input-block"}>
-                        <label htmlFor="name" className={"form__label"}>
+                        <label htmlFor="end_at" className={"form__label"}>
                             Date de fin
                         </label>
                         <input
@@ -73,8 +99,8 @@ const Form = (props) => {
                             onChange={props.handleChange}
                             onBlur={props.handleBlur}
                             className={props.errors.end_at && props.touched.end_at
-                                ? 'text-input error'
-                                : 'text-input'}
+                                ? 'form__text form__text--error'
+                                : 'form__text'}
                         />
                         {props.errors.end_at &&
                         props.touched.end_at &&
@@ -82,49 +108,7 @@ const Form = (props) => {
                     </div>
 
                     <div className={"form__input-block"}>
-                        <label htmlFor="name" style={{display: 'block'}}>
-                            Description de la tache
-                        </label>
-                        <textarea
-                            id="description"
-                            placeholder="Description"
-                            value={props.values.description}
-                            onChange={props.handleChange}
-                            onBlur={props.handleBlur}
-                            className={props.errors.description && props.touched.description
-                                ? 'text-input error'
-                                : 'text-input'}
-                        />
-                        {props.errors.description &&
-                        props.touched.description &&
-                        <div className="input-feedback">{props.errors.description}</div>}
-                    </div>
-
-
-                    <div className={"form__input-block"}>
-                        <label htmlFor="name" style={{display: 'block'}}>
-                            Statut de la tache
-                        </label>
-                        <select
-                            id="status"
-                            value={props.values.status}
-                            onChange={props.handleChange}
-                            onBlur={props.handleBlur}
-                            className={props.errors.status && props.touched.status
-                                ? 'text-input error'
-                                : 'text-input'
-                            }>
-                            <option value='1'>A faire</option>
-                            <option value='2'>En cours</option>
-                            <option value='3'>Terminée</option>
-                            <option value='4'>Validée</option>
-                        </select>
-                        {props.errors.status &&
-                        props.touched.status &&
-                        <div className="input-feedback">{props.errors.status}</div>}
-                    </div>
-                    <div className={"form__input-block"}>
-                        <label htmlFor="name" style={{display: 'block'}}>
+                        <label htmlFor="cost" style={{display: 'block'}}>
                             Prix de la tache
                         </label>
                         <input
@@ -135,12 +119,34 @@ const Form = (props) => {
                             onChange={props.handleChange}
                             onBlur={props.handleBlur}
                             className={props.errors.cost && props.touched.cost
-                                ? 'text-input error'
-                                : 'text-input'}
+                                ? 'form__text form__text--error'
+                                : 'form__text'}
                         />
                         {props.errors.cost &&
                         props.touched.cost &&
-                        <div className="input-feedback">{props.errors.cost}</div>}
+                        <div className="form__error">{props.errors.cost}</div>}
+                    </div>
+
+                    <div className={"form__input-block"}>
+                        <label htmlFor="status" style={{display: 'block'}}>
+                            Statut de la tache
+                        </label>
+                        <div className="form__select-wrapper">
+                            <select
+                                id="status"
+                                value={props.values.status}
+                                onChange={props.handleChange}
+                                onBlur={props.handleBlur}
+                                className={'form__select'}>
+                                <option value='1'>A faire</option>
+                                <option value='2'>En cours</option>
+                                <option value='3'>Terminée</option>
+                                <option value='4'>Validée</option>
+                            </select>
+                        </div>
+                        {props.errors.status &&
+                        props.touched.status &&
+                        <div className="form__error">{props.errors.status}</div>}
                     </div>
 
                     <div className={"form__input-block form__input-block--double"}>
@@ -154,12 +160,12 @@ const Form = (props) => {
                         />
                         {props.errors.users &&
                         props.touched.users &&
-                        <div className="input-feedback">{props.errors.users}</div>}
+                        <div className="form__error">{props.errors.users}</div>}
                     </div>
 
                     <div className={"form__input-block form__input-block--double"}>
-                        <label htmlFor="name" className={"form__label"}>
-                            Heure alloué à la tache
+                        <label htmlFor="time_spend" className={"form__label"}>
+                            Heures allouées à la tache
                         </label>
                         <input
                             id="time_spend"
@@ -169,8 +175,8 @@ const Form = (props) => {
                             onChange={props.handleChange}
                             onBlur={props.handleBlur}
                             className={props.errors.time_spend && props.touched.time_spend
-                                ? 'text-input error'
-                                : 'text-input'}
+                                ? 'form__text form__text--error'
+                                : 'form__text'}
                         />
                         {props.errors.time_spend &&
                         props.touched.time_spend &&
@@ -205,27 +211,38 @@ class TasksForm extends React.Component {
     handleSubmit(values, {setSubmitting}) {
         const projectId = this.projectId
         const changed = diff(this.initialValues, values)
-
+        if (changed.users) {
+            const users = values.users
+            changed.users = []
+            users.map(user => {
+                changed.users.push(user.value)
+            })
+        }
         if (this.editing === "new") {
-            const userId = changed.user
-            delete changed.user
-            changed.project = this.projectId
             apiHelpers.apiPost(`project/${projectId}/tasks`, changed).then(response => {
-                if (response.status === 201) {
-                    this.setEditing(false)()
-                } else {
-                    // TODO: error feedback
-                    setSubmitting(false)
-                }
+                this.setEditing(false)()
+            }).catch((r) => {
+                console.log(r)
+                swal({
+                    title: "Oups!",
+                    text: "Une erreur est survenue!",
+                    icon: "error",
+                    button: "Ok!",
+                })
+                setSubmitting(false)
             })
         } else {
             apiHelpers.apiPatch("tasks", changed, this.editing).then(response => {
-                if (response.status === 201) {
-                    this.setEditing(false)()
-                } else {
-                    // TODO: error feedback
-                    setSubmitting(false)
-                }
+                this.setEditing(false)()
+            }).catch((r) => {
+                console.log(r)
+                swal({
+                    title: "Oups!",
+                    text: "Une erreur est survenue!",
+                    icon: "error",
+                    button: "Ok!",
+                })
+                setSubmitting(false)
             })
         }
     }
@@ -233,9 +250,12 @@ class TasksForm extends React.Component {
     deleteTask(id) {
         return () => {
             apiHelpers.apiDelete("tasks", id).then(response => {
-                console.log(response)
                 this.setEditing(false)()
-                // TODO: feedback
+                swal({
+                    text: "La tâche a bien été supprimée!",
+                    icon: "success",
+                    button: "Ok!",
+                })
             })
         }
     }
@@ -243,11 +263,15 @@ class TasksForm extends React.Component {
     render() {
 
         let editingTask
+        let taskUsers = []
         if (this.props.editing === "new") {
             editingTask = false
         } else {
             editingTask = this.props.tasks.entities.tasks[this.props.editing]
-            console.log(editingTask)
+            editingTask.users.map(userId => {
+                const user = this.props.tasks.entities.users[userId]
+                taskUsers.push({value: user.id, label: `${user.firstname} ${user.lastname}`})
+            })
         }
         return (
             <div>
@@ -275,13 +299,13 @@ class TasksForm extends React.Component {
                     onSubmit={this.handleSubmit}
                     initialValues={{
                         name: editingTask.name,
-                        start_at: editingTask.start_at ? editingTask.start_at.substr(0, 10) : null,
-                        end_at: editingTask.end_at ? editingTask.end_at.substr(0, 10) : null,
+                        start_at: editingTask.startAt ? editingTask.startAt.substr(0, 10) : "",
+                        end_at: editingTask.endAt ? editingTask.endAt.substr(0, 10) : "",
                         cost: editingTask.cost,
-                        time_spend: editingTask.hour_spend,
+                        time_spend: editingTask.time_spend,
                         description: editingTask.description,
                         status: editingTask.status,
-                        // users: [{label: "Admin Admin", value: 1}]
+                        users: taskUsers,
                     }}
                     render={formikProps =>
                         <Form {...formikProps} displayName={"TasksInnerForm"}
