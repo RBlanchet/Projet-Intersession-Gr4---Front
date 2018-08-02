@@ -27,22 +27,18 @@ function getHeaders() {
 
 function withoutPayload(method, endpoint, id = "") {
     const url = getUrl(endpoint, id)
-    try {
-        return axios({
-            method: method,
-            url: url,
-            headers: getHeaders()
-        })
-    } catch (error) {
-        console.error(error)
-    }
+    return axios({
+        method: method,
+        url: url,
+        headers: getHeaders()
+    })
 }
 
-function apiGet(endpoint, id='') {
+function apiGet(endpoint, id = '') {
     return withoutPayload('get', endpoint, id)
 }
 
-function apiDelete(endpoint, id='') {
+function apiDelete(endpoint, id = '') {
     return withoutPayload('delete', endpoint, id)
 }
 
@@ -76,16 +72,12 @@ function withPayload(method, endpoint, payload, id) {
 
     const url = getUrl(endpoint, id)
 
-    try {
-        return axios({
-            method: method,
-            url: url,
-            data: JSON.stringify(payload),
-            headers: getHeaders()
-        })
-    } catch (error) {
-        console.error(error)
-    }
+    return axios({
+        method: method,
+        url: url,
+        data: JSON.stringify(payload),
+        headers: getHeaders()
+    })
 }
 
 
