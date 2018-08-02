@@ -16,7 +16,6 @@ class Users extends React.Component {
             users: false,
             editing: false,
         }
-        console.log(connectionHelpers.isAuthenticated())
         this.setEditing = this.setEditing.bind(this)
         this.reloadUsers = this.reloadUsers.bind(this)
     }

@@ -19,7 +19,7 @@ const TransitionedPage = (WrappedComponent) => {
             transitionAppear={true}
             transitionAppearTimeout={600}
             transitionEnterTimeout={600}
-            transitionLeaveTimeout={200}
+            transitionLeaveTimeout={500}
             transitionName="slide">
             <WrappedComponent {...props} />
         </ReactCSSTransitionGroup>
@@ -39,9 +39,9 @@ const Main = () => (
                 <Route path="/users" component={TransitionedPage(Users)}/>
 
                 <Route exact path="/projects" component={TransitionedPage(Projects)}/>
-                <Route path="/projects/:id/tasks" component={ProjectTasks}/>
-                <Route path="/projects/:id/users" component={ProjectUsers}/>
-                <Route path="/projects/:id/gantt" component={ProjectGantt}/>
+                <Route path="/projects/:id/tasks" component={TransitionedPage(ProjectTasks)}/>
+                <Route path="/projects/:id/users" component={TransitionedPage(ProjectUsers)}/>
+                <Route path="/projects/:id/gantt" component={TransitionedPage(ProjectGantt)}/>
 
                 <Route path="/tasks" component={TransitionedPage(Tasks)}/>
 

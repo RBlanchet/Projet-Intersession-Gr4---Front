@@ -25,6 +25,15 @@
     margin: 15px;
     height: 80%;
     padding-bottom: 15px;
+    &--height {
+      min-height: 150px;
+    }
+  }
+  &__without-height {
+    min-height: 20px;
+  }
+  &__profile {
+    width: 32%;
   }
 }
 
