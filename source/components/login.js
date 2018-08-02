@@ -6,6 +6,7 @@ import apiHelpers from "../helpers/apiHelpers"
 import connectionHelpers from "../helpers/connectionHelpers"
 import {Redirect} from "react-router-dom"
 import styled from "styled-components"
+import swal from "sweetalert"
 
 class Login extends React.Component {
     constructor(props) {
@@ -80,12 +81,16 @@ const LoginForm = withFormik({
 
             setSubmitting(false)
             if (connectionHelpers.loginUser(response)) {
-                console.log(window.localStorage.getItem('Job'))
                 window.location += "dashboard"
             } else {
-                // TODO: error feedback
                 console.log("connection failed")
                 // this.errors.global = "Le couple login / mot de passe ne corresponds pas"
+                swal({
+                    title: "Oups!",
+                    text: "Le mot de passse et l'email ne semblent pas correspondre!",
+                    icon: "error",
+                    button: "Ok!",
+                })
             }
         })
     },

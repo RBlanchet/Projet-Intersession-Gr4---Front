@@ -3,6 +3,8 @@ import {string, object, number, ref} from 'yup'
 import {Formik} from 'formik'
 import {diff} from 'deep-object-diff'
 import apiHelpers from "../helpers/apiHelpers"
+import swal from "sweetalert"
+
 const Button = (props) => {
     console.log(props.editing)
     if (props.editing !== "new" && props.editing !== "editing-profile" ) {
@@ -24,6 +26,7 @@ const Button = (props) => {
 
 const Form = (props) => {
     const jobs = props.jobs
+    console.log(props.isSubmitting)
     return (
         <div className={"form-modal__overlay"} onClick={props.setEditing(false)}>
             <div className={"form-modal"} onClick={(e) => {
@@ -173,27 +176,31 @@ class UsersForm extends React.Component {
         delete changed.plainPasswordConfirm
         if (this.editing !== "new") {
             apiHelpers.apiPatch("users", changed, this.editing).then(response => {
-                if (response.status === 200) {
-                    this.setEditing(false)()
-                } else {
-                    // TODO: error feedback
-                    setSubmitting(false)
-                }
+                this.setEditing(false)()
+            }).catch((r) => {
+                console.log(r)
+                swal({
+                    title: "Oups!",
+                    text: "Une erreur est survenue!",
+                    icon: "error",
+                    button: "Ok!",
+                })
+                setSubmitting(false)
             })
         } else {
 
-            if (changed.plainPassword) {
-                apiHelpers.apiPost("users", changed).then(response => {
-                    if (response.status === 201) {
-                        this.setEditing(false)()
-                    } else {
-                        // TODO: error feedback
-                        setSubmitting(false)
-                    }
+            apiHelpers.apiPost("users", changed).then(response => {
+                this.setEditing(false)()
+            }).catch((r) => {
+                console.log(r)
+                swal({
+                    title: "Oups!",
+                    text: "Une erreur est survenue!",
+                    icon: "error",
+                    button: "Ok!",
                 })
-            } else {
-                // TODO error feedback
-            }
+                setSubmitting(false)
+            })
             setSubmitting(false)
         }
     }

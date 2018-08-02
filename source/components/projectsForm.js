@@ -3,6 +3,7 @@ import {string, object, ref} from 'yup'
 import {Formik} from 'formik'
 import {diff} from 'deep-object-diff'
 import apiHelpers from "../helpers/apiHelpers"
+import swal from "sweetalert"
 
 const Form = (props) => {
 
@@ -182,7 +183,7 @@ const Form = (props) => {
                             value={props.values.description}
                             onChange={props.handleChange}
                             onBlur={props.handleBlur}
-                            style={{resize : 'none'}}
+                            style={{resize: 'none'}}
                             className={props.errors.description && props.touched.description
                                 ? 'text-input error'
                                 : 'text-input'}
@@ -230,21 +231,29 @@ class ProjectsForm extends React.Component {
         delete changed.hour_end
         if (this.editing !== "new") {
             apiHelpers.apiPatch("projects", changed, this.editing).then(response => {
-                if (response.status === 200) {
-                    this.setEditing(false)()
-                } else {
-                    // TODO: error feedback
-                    setSubmitting(false)
-                }
+                this.setEditing(false)()
+            }).catch((r) => {
+                console.log(r)
+                swal({
+                    title: "Oups!",
+                    text: "Une erreur est survenue!",
+                    icon: "error",
+                    button: "Ok!",
+                })
+                setSubmitting(false)
             })
         } else {
             apiHelpers.apiPost("projects", changed).then(response => {
-                if (response.status === 201) {
-                    this.setEditing(false)()
-                } else {
-                    // TODO: error feedback
-                    setSubmitting(false)
-                }
+                this.setEditing(false)()
+            }).catch((r) => {
+                console.log(r)
+                swal({
+                    title: "Oups!",
+                    text: "Une erreur est survenue!",
+                    icon: "error",
+                    button: "Ok!",
+                })
+                setSubmitting(false)
             })
             setSubmitting(false)
         }
@@ -254,7 +263,11 @@ class ProjectsForm extends React.Component {
         return () => {
             apiHelpers.apiDelete("projects", id).then(response => {
                 this.setEditing(false)()
-                // TODO: feedback
+                swal({
+                    text: "Le projet à bien été supprimé!",
+                    icon: "success",
+                    button: "Ok!",
+                })
             })
         }
     }

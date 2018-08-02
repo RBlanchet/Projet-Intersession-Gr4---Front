@@ -5,7 +5,6 @@ import projectSchema from "../schemas/projects"
 const storage = window.localStorage
 
 function isAuthenticated() {
-    // TODO: validate Token age
     // 1 minute: 60 * 1000ms
     const tokenAge = (new Date().getTime()) - parseInt(storage.getItem("Date"))
     if (tokenAge >= (1000 * 60 * 60 * 12)) {

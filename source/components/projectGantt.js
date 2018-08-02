@@ -106,7 +106,6 @@ export default class ProjectGantt extends React.Component {
                     type: '0'
                 })
             })
-            console.log(data)
             return (
                 <div>
                     <Toolbar
