@@ -5,6 +5,7 @@ import RolesForm from "./rolesForm"
 import ReactTable from "react-table"
 import {role, user, job} from "../schemas/schemas"
 import {Link} from "react-router-dom"
+import swal from "sweetalert"
 
 class Roles extends React.Component {
     constructor(props) {
@@ -12,6 +13,7 @@ class Roles extends React.Component {
         this.state = {
             roles: false,
             editing: false,
+            project: false
         }
 
         this.setEditing = this.setEditing.bind(this)
@@ -28,6 +30,19 @@ class Roles extends React.Component {
         apiHelpers.apiGet(`jobs`).then((response) => {
             this.setState({jobs: normalize(response.data, [job])})
         })
+        apiHelpers.apiGet(`projects/${this.props.match.params.id}`)
+            .then((response) => {
+                this.setState({project: response.data})
+            })
+            .catch((r) => {
+                swal({
+                    title: "Désolé !",
+                    text: "Le projet est desactivé",
+                    icon: "warning",
+                    button: "Ok!",
+                })
+                window.location.hash = "#/projects"
+            })
     }
 
     reloadRoles() {
@@ -55,7 +70,7 @@ class Roles extends React.Component {
         return (
             <div className={"content"}>
                 <div className="content__header">
-                    <RolesHeader setEditing={this.setEditing} projectId={this.props.match.params.id}/>
+                    <RolesHeader setEditing={this.setEditing} project={this.state.project}/>
                 </div>
                 <div className="content__inner">
                     <RolesCRUD
@@ -85,19 +100,36 @@ const Loading = props => {
 }
 
 const RolesHeader = props => {
-    return (
-        <div className="content__header--space">
-            <h1 className="content__header--title" style={{margin: 0}}>Participants au projet id: {props.projectId}</h1>
-            <div className="content__header--buttons">
-                <Link to={"/projects"} className="content__header--button">
-                    <i className="fas fa-arrow-left"/>
-                </Link>
-                <button className="content__header--button" onClick={props.setEditing("new")}>
-                    <i className="fas fa-plus"/>
-                </button>
+    if (props.project) {
+        return (
+            <div className="content__header--space">
+                <h1 className="content__header--title" style={{margin: 0}}>Participants au projet <i>{props.project.name}</i></h1>
+                <div className="content__header--buttons">
+                    <Link to={"/projects"} className="content__header--button">
+                        <i className="fas fa-arrow-left"/>
+                    </Link>
+                    <button className="content__header--button" onClick={props.setEditing("new")}>
+                        <i className="fas fa-plus"/>
+                    </button>
+                </div>
             </div>
-        </div>
-    )
+        )
+    } else {
+        return (
+            <div className="content__header--space">
+                <h1 className="content__header--title" style={{margin: 0}}><Loading/></h1>
+                <div className="content__header--buttons">
+                    <Link to={"/projects"} className="content__header--button">
+                        <i className="fas fa-arrow-left"/>
+                    </Link>
+                    <button className="content__header--button" onClick={props.setEditing("new")}>
+                        <i className="fas fa-plus"/>
+                    </button>
+                </div>
+            </div>
+        )
+    }
+
 }
 
 class RolesCRUD extends React.Component {

@@ -4,12 +4,15 @@ import {normalize} from "normalizr"
 import ReactTable from "react-table"
 import ReactDOM from "react-dom"
 import {Chart} from "react-google-charts"
-import taskSchema from "../schemas/tasks"
+import {task} from "../schemas/schemas"
+import {project} from "../schemas/schemas"
 import {Link} from "react-router-dom"
+
 import Gantt from "./gantt"
 import Toolbar from './toolbar'
 import MessageArea from './messageArea'
 import './App.css'
+import projectSchema from "../schemas/projects"
 import swal from "sweetalert"
 
 
@@ -25,11 +28,13 @@ export default class ProjectGantt extends React.Component {
         this.handleZoomChange = this.handleZoomChange.bind(this)
         this.logTaskUpdate = this.logTaskUpdate.bind(this)
         this.logLinkUpdate = this.logLinkUpdate.bind(this)
+        this.reloadTasks = this.reloadTasks.bind(this)
     }
 
     componentDidMount() {
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/tasks`).then((response) => {
             this.setState({tasks: response.data})
+            this.setState({tasksNormalized: normalize(response.data, [task])})
         })
         apiHelpers.apiGet(`projects/${this.props.match.params.id}`)
             .then((response) => {
@@ -39,13 +44,21 @@ export default class ProjectGantt extends React.Component {
                 swal({
                     title: "Désolé !",
                     text: "Le projet est desactivé",
-                    icon: "error",
+                    icon: "warning",
                     button: "Ok!",
                 })
                 window.location.hash = "#/projects"
             })
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/users`).then((response) => {
             this.setState({users: response.data})
+        })
+    }
+
+    reloadTasks() {
+        this.setState({tasks: false})
+        apiHelpers.apiGet(`projects/${this.props.match.params.id}/tasks`).then((response) => {
+            this.setState({tasks: response.data})
+            this.setState({tasksNormalized: normalize(response.data, [task])})
         })
     }
 
@@ -103,7 +116,7 @@ export default class ProjectGantt extends React.Component {
                     text: task.name,
                     start_date: new Date(task.startAt),
                     end_date: new Date(task.endAt),
-                    duration: task.timeSpend,
+                    //duration: task.timeSpend,
                     progress: task.status.percentage / 100,
                     users: task.users,
                     cost: task.cost,
@@ -132,21 +145,19 @@ export default class ProjectGantt extends React.Component {
                                         <div className="gantt-container">
                                             <Gantt
                                                 tasks={data}
+                                                project={this.state.project}
+                                                tasksNormalized={this.state.tasksNormalized}
                                                 zoom={this.state.currentZoom}
                                                 onTaskUpdated={this.logTaskUpdate}
-                                                onLinkUpdated={this.logLinkUpdate}
+                                                onLinkUpdated={this.logLinkUpdate} reloadHandle={this.reloadTasks}
                                             />
                                         </div>
-                                        <MessageArea
-                                            messages={this.state.messages}
-                                        />
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             )
         }
         else {
@@ -185,15 +196,32 @@ const Loading = props => {
     )
 }
 
-
 const GanttHeader = props => {
+    console.log(props.project)
     return (
-        <div className="content__header--space">
-            <h1 className="content__header--title" style={{margin: 0}}>Participants au projet <i>{props.project.name}</i></h1>
-            <div className="content__header--buttons">
-                <Link to={"/projects"} className="content__header--button">
-                    <i className="fas fa-arrow-left"/>
-                </Link>
+        <div className="w-100">
+            <div className="content__header--space">
+                <h1 className="content__header--title" style={{margin: 0}}>Participants au
+                    projet <i>{props.project.name}</i></h1>
+                <div className="row row__header">
+                    <div className="row__header--information">
+                        Prix : {props.project.price}€
+                    </div>
+                    <div className="row__header--information">
+                        Coût: {props.project.cost}€
+                    </div>
+                    <div className="row__header--information">
+                        Ressources disponible : {props.project.hour_pool}
+                    </div>
+                    <div className="row__header--information">
+                        Ressources consommées : {props.project.hour_spend}
+                    </div>
+                </div>
+                <div className="content__header--buttons">
+                    <Link to={"/projects"} className="content__header--button">
+                        <i className="fas fa-arrow-left"/>
+                    </Link>
+                </div>
             </div>
         </div>
     )

@@ -377,7 +377,8 @@ class Card extends React.Component {
                 </div>
             )
         } else {
-            if (this.props.type == 'user') {
+            if (this.props.type == "user") {
+                console.log(this.props.type)
                 return (
                     <div className="card card__profile">
                         <div className="card__header">

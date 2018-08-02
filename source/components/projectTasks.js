@@ -6,6 +6,7 @@ import ReactTable from "react-table"
 import taskSchema from "../schemas/tasks"
 import {Link} from "react-router-dom"
 import {role, task} from "../schemas/schemas"
+import swal from "sweetalert"
 
 class Tasks extends React.Component {
     constructor(props) {
@@ -13,6 +14,7 @@ class Tasks extends React.Component {
         this.state = {
             users: false,
             editing: false,
+            project: false
         }
 
         this.setEditing = this.setEditing.bind(this)
@@ -26,6 +28,19 @@ class Tasks extends React.Component {
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/roles`).then((response) => {
             this.setState({roles: normalize(response.data, [role])})
         })
+        apiHelpers.apiGet(`projects/${this.props.match.params.id}`)
+            .then((response) => {
+                this.setState({project: response.data})
+            })
+            .catch((r) => {
+                swal({
+                    title: "Désolé !",
+                    text: "Le projet est desactivé",
+                    icon: "warning",
+                    button: "Ok!",
+                })
+                window.location.hash = "#/projects"
+            })
     }
 
     reloadTasks() {
@@ -53,7 +68,7 @@ class Tasks extends React.Component {
         return (
             <div className={"content"}>
                 <div className="content__header">
-                    <TasksHeader setEditing={this.setEditing} projectId={this.props.match.params.id}/>
+                    <TasksHeader setEditing={this.setEditing} project={this.state.project}/>
                 </div>
                 <div className="content__inner">
                     <TasksCRUD
@@ -83,19 +98,35 @@ const Loading = props => {
 }
 
 const TasksHeader = props => {
-    return (
-        <div className="content__header--space">
-            <h1 className="content__header--title" style={{margin: 0}}>Tâches du projet {props.projectId}</h1>
-            <div className="content__header--buttons">
-                <Link to={"/projects"} className="content__header--button">
-                    <i className="fas fa-arrow-left"/>
-                </Link>
-                <button className="content__header--button" onClick={props.setEditing("new")}>
-                    <i className="fas fa-plus"/>
-                </button>
+    if (props.project) {
+        return (
+            <div className="content__header--space">
+                <h1 className="content__header--title" style={{margin: 0}}>Tâches du projet <i>{props.project.name}</i></h1>
+                <div className="content__header--buttons">
+                    <Link to={"/projects"} className="content__header--button">
+                        <i className="fas fa-arrow-left"/>
+                    </Link>
+                    <button className="content__header--button" onClick={props.setEditing("new")}>
+                        <i className="fas fa-plus"/>
+                    </button>
+                </div>
             </div>
-        </div>
-    )
+        )
+    } else {
+        return (
+            <div className="content__header--space">
+                <h1 className="content__header--title" style={{margin: 0}}><Loading/></h1>
+                <div className="content__header--buttons">
+                    <Link to={"/projects"} className="content__header--button">
+                        <i className="fas fa-arrow-left"/>
+                    </Link>
+                    <button className="content__header--button" onClick={props.setEditing("new")}>
+                        <i className="fas fa-plus"/>
+                    </button>
+                </div>
+            </div>
+        )
+    }
 }
 
 class TasksCRUD extends React.Component {
