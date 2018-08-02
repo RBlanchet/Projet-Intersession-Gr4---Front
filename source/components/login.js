@@ -80,7 +80,6 @@ const LoginForm = withFormik({
 
             setSubmitting(false)
             if (connectionHelpers.loginUser(response)) {
-                console.log(window.localStorage.getItem('Job'))
                 window.location += "dashboard"
             } else {
                 // TODO: error feedback

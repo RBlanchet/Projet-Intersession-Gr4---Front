@@ -197,7 +197,7 @@ class RolesForm extends React.Component {
             delete changed.user
             changed.project = this.projectId
             apiHelpers.apiPost(`users/${userId}/roles`, changed).then(response => {
-                if (response.status === 201) {
+                if (response.status < 300) {
                     this.setEditing(false)()
                 } else {
                     // TODO: error feedback
@@ -206,7 +206,7 @@ class RolesForm extends React.Component {
             })
         } else {
             apiHelpers.apiPatch("roles", changed, this.editing).then(response => {
-                if (response.status === 201) {
+                if (response.status < 300) {
                     this.setEditing(false)()
                 } else {
                     // TODO: error feedback

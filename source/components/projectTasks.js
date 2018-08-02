@@ -5,7 +5,7 @@ import TasksForm from "./tasksForm"
 import ReactTable from "react-table"
 import taskSchema from "../schemas/tasks"
 import {Link} from "react-router-dom"
-import {role} from "../schemas/schemas"
+import {role, task} from "../schemas/schemas"
 
 class Tasks extends React.Component {
     constructor(props) {
@@ -21,7 +21,7 @@ class Tasks extends React.Component {
 
     componentDidMount() {
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/tasks`).then((response) => {
-            this.setState({tasks: normalize(response.data, taskSchema)})
+            this.setState({tasks: normalize(response.data, [task])})
         })
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/roles`).then((response) => {
             this.setState({roles: normalize(response.data, [role])})
@@ -30,7 +30,7 @@ class Tasks extends React.Component {
 
     reloadTasks() {
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/tasks`).then((response) => {
-            this.setState({tasks: normalize(response.data, taskSchema)})
+            this.setState({tasks: normalize(response.data, [task])})
         })
     }
 
