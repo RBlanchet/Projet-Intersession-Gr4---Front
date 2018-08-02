@@ -4,12 +4,15 @@ import {normalize} from "normalizr"
 import ReactTable from "react-table"
 import ReactDOM from "react-dom"
 import {Chart} from "react-google-charts"
-import taskSchema from "../schemas/tasks"
+import {task} from "../schemas/schemas"
+import {project} from "../schemas/schemas"
 import {Link} from "react-router-dom"
+
 import Gantt from "./gantt"
 import Toolbar from './toolbar'
 import MessageArea from './messageArea'
 import './App.css'
+import projectSchema from "../schemas/projects";
 
 
 export default class ProjectGantt extends React.Component {
@@ -24,17 +27,26 @@ export default class ProjectGantt extends React.Component {
         this.handleZoomChange = this.handleZoomChange.bind(this);
         this.logTaskUpdate = this.logTaskUpdate.bind(this);
         this.logLinkUpdate = this.logLinkUpdate.bind(this);
+        this.reloadTasks = this.reloadTasks.bind(this);
     }
 
     componentDidMount() {
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/tasks`).then((response) => {
             this.setState({tasks: response.data})
+            this.setState({tasksNormalized: normalize(response.data, [task])})
         })
         apiHelpers.apiGet(`projects/${this.props.match.params.id}`).then((response) => {
             this.setState({project: response.data})
         })
         apiHelpers.apiGet(`projects/${this.props.match.params.id}/users`).then((response) => {
             this.setState({users: response.data})
+        })
+    }
+    reloadTasks(){
+        this.setState({tasks: false})
+        apiHelpers.apiGet(`projects/${this.props.match.params.id}/tasks`).then((response) => {
+            this.setState({tasks: response.data})
+            this.setState({tasksNormalized: normalize(response.data, [task])})
         })
     }
     handleZoomChange(zoom) {
@@ -94,7 +106,7 @@ export default class ProjectGantt extends React.Component {
                     text: task.name,
                     start_date: new Date(task.startAt),
                     end_date: new Date(task.endAt),
-                    duration: task.timeSpend,
+                    //duration: task.timeSpend,
                     progress: task.status.percentage /100,
                     users: task.users,
                     cost: task.cost,
@@ -106,7 +118,6 @@ export default class ProjectGantt extends React.Component {
                     type: '0'
                 })
             })
-            console.log(data)
             return (
                 <div>
                     <Toolbar
@@ -116,9 +127,12 @@ export default class ProjectGantt extends React.Component {
                     <div className="gantt-container">
                         <Gantt
                             tasks={data}
+                            project={this.state.project}
+                            tasksNormalized={this.state.tasksNormalized}
                             zoom={this.state.currentZoom}
                             onTaskUpdated={this.logTaskUpdate}
                             onLinkUpdated={this.logLinkUpdate}
+                            reloadHandle={this.reloadTasks}
                         />
                     </div>
                     <MessageArea
