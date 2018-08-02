@@ -1,7 +1,9 @@
 /*global gantt*/
 import React, { Component } from 'react';
 import 'dhtmlx-gantt';
+import {diff} from 'deep-object-diff'
 import 'dhtmlx-gantt/codebase/dhtmlxgantt.css';
+import apiHelpers from "../helpers/apiHelpers";
 
 export default class Gantt extends Component {
     setZoom(value){
@@ -55,19 +57,104 @@ export default class Gantt extends Component {
 
         gantt.attachEvent('onAfterTaskAdd', (id, task) => {
             if(this.props.onTaskUpdated) {
-                this.props.onTaskUpdated(id, 'inserted', task);
+                this.props.onTaskUpdated(id, 'inserted',task);
+                const projectId = this.props.project.id
+                let changed = diff(this.props.tasksNormalized.entities.tasks[id], task)
+                changed.name = changed.text
+                changed.time_spend = changed.timeSpend
+                changed.start_at = formatDate(changed.start_date.toString())
+                changed.end_at = formatDate(changed.end_date.toString())
+
+                //Rework later
+                delete changed.active
+                delete changed.progress
+                delete changed.text
+
+                delete changed.start_date
+                delete changed.end_date
+                delete changed.startAt
+                delete changed.endAt
+                delete changed.createdBy
+                delete changed.createdAt
+                delete changed.duration
+                delete changed.timeSpend
+                delete changed.details
+
+                delete changed.id
+                delete changed.$index
+                delete changed.$level
+                delete changed.$no_end
+                delete changed.$no_start
+                delete changed.$open
+                delete changed.$rendered_parent
+                delete changed.$rendered_type
+                delete changed.$source
+                delete changed.$target
+
+                apiHelpers.apiPost(`projects/${projectId}/tasks`, changed).then(response => {
+                    if (response.status === 201) {
+                       // this.props.reloadHandle()
+                    } else {
+                        // TODO: error feedback
+                        //this.props.reloadHandle()
+                    }
+                })
+                location.reload(true)
             }
         });
 
         gantt.attachEvent('onAfterTaskUpdate', (id, task) => {
             if(this.props.onTaskUpdated) {
+                let changed = diff(this.props.tasksNormalized.entities.tasks[id], task)
+                changed.name = changed.text
+                changed.time_spend = changed.timeSpend
+                changed.start_at = formatDate(changed.start_date.toString())
+                changed.end_at = formatDate(changed.end_date.toString())
+                //Rework later
+                delete changed.text
+                delete changed.active
+                delete changed.progress
+                delete changed.$index
+                delete changed.$level
+                delete changed.$no_end
+                delete changed.$no_start
+                delete changed.$open
+                delete changed.$rendered_parent
+                delete changed.$rendered_type
+                delete changed.$source
+                delete changed.$target
+                delete changed.start_date
+                delete changed.end_date
+                delete changed.startAt
+                delete changed.endAt
+                delete changed.createdBy
+                delete changed.createdAt
+                delete changed.duration
+                delete changed.timeSpend
+                delete changed.details
                 this.props.onTaskUpdated(id, 'updated', task);
+                apiHelpers.apiPatch("tasks", changed, id).then(response => {
+                    if (response.status === 200) {
+                        this.props.reloadHandle()
+                    } else {
+                        // TODO: error feedback
+                        this.props.reloadHandle()
+                    }
+                })
             }
         });
 
         gantt.attachEvent('onAfterTaskDelete', (id) => {
             if(this.props.onTaskUpdated) {
                 this.props.onTaskUpdated(id, 'deleted');
+                apiHelpers.apiDelete("tasks", id).then(response => {
+                    if (response.status === 200) {
+                        this.props.reloadHandle()
+                    } else {
+                        // TODO: error feedback
+                        this.props.reloadHandle()
+                    }
+                })
             }
         });
 
@@ -91,12 +178,16 @@ export default class Gantt extends Component {
         gantt.attachEvent("onBeforeLightbox",(id) =>{
             var task = gantt.getTask(id)
             var users = ""
-            task.users.map((user, i) =>{
-              users += "<span>" + user.firstname+ " " + user.lastname + "</span>"
-            })
-            task.details = "<span id='title1'>Users: </span>"+ users +
-                "<span id='title2'>Progress :</span>" + task.progress*100 + " %" +
-                "<span id='title3'> Cost :</span>" + task.cost + " €"
+            if(task.users){
+                task.users.map((user, i) =>{
+                    users += "<span>" + user.firstname+ " " + user.lastname + "</span>"
+                })
+            }
+            if(task.details){
+                task.details = "<span id='title1'>Users: </span>"+ users +
+                    "<span id='title2'>Progress :</span>" + task.progress*100 + " %" +
+                    "<span id='title3'> Cost :</span>" + task.cost + " €"
+            }
             return true
         })
     }
@@ -107,11 +198,12 @@ export default class Gantt extends Component {
         gantt.parse(this.props.tasks);
 
         gantt.config.lightbox.sections=[
-            {name:"name", height:30, map_to:"name", type:"textarea"},
+            {name:"name", height:30, map_to:"text", type:"textarea"},
             {name:"details", height:16, type:"template", map_to:"details"},
-            {name:"description", height:30, map_to:"text", type:"textarea"},
+            {name:"description", height:30, map_to:"description", type:"textarea"},
             {name:"cost", height:30, map_to:"cost", type:"textarea"},
-            {name:"time",        height:60, map_to:"auto", type:"time"},
+            {name:"time_spend", height:30, map_to:"time_spend", type:"textarea"},
+            {name:"time",        height:60, map_to:{start_date:"start_at",end_date:"end_at"}, type:"time"},
             {name:"parent", type:"parent", allow_root:"true", root_label:"Pas de parent"},
             {name:"users", map_to:"users", type:"checkbox", options:gantt.serverList("users")},
             {name:"status",  height: 22, map_to:"status", type:"select", options: [
@@ -128,7 +220,9 @@ export default class Gantt extends Component {
         gantt.locale.labels.section_status = "Statut"
         gantt.locale.labels.section_users = "Ajouter a la tache"
         gantt.locale.labels.section_cost = "Coût de la tache"
+        gantt.locale.labels.section_time_spend = "Temps passé"
     }
+
 
     render() {
         this.setZoom(this.props.zoom);
@@ -141,3 +235,13 @@ export default class Gantt extends Component {
         );
     }
 }
+function formatDate(date){
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear()
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    return [year, month, day].join('-')
+}
+
