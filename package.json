@@ -91,6 +91,7 @@
   "scripts": {
     "start": "electron .",
     "dev": "webpack --watch --display-error-details --config ./webpack/dev.config.babel.js",
-    "build": "cross-env NODE_ENV=production webpack --config ./webpack/prod.config.babel.js"
+    "build": "cross-env NODE_ENV=production webpack --config ./webpack/prod.config.babel.js",
+    "pkg": "electron-packager-interactive"
   }
 }

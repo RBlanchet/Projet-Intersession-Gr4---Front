@@ -31,7 +31,7 @@ The code for static is in /source directory, compiled code by webpack goes in /d
 
 ## Production build
 
-TODO
+- ``` make compile ```
 
 ## General info
 
