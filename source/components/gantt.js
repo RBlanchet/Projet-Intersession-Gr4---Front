@@ -194,8 +194,10 @@ export default class Gantt extends Component {
     }
 
     componentDidMount() {
+
         this.initGanttEvents();
         gantt.init(this.ganttContainer);
+        gantt.clearAll()
         gantt.parse(this.props.tasks);
 
         gantt.config.lightbox.sections=[
