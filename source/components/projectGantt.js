@@ -116,7 +116,7 @@ export default class ProjectGantt extends React.Component {
                     text: task.name,
                     start_date: new Date(task.startAt),
                     end_date: new Date(task.endAt),
-                    //duration: task.timeSpend,
+                    duration: task.timeSpend,
                     progress: task.status.percentage / 100,
                     users: task.users,
                     cost: task.cost,
@@ -197,7 +197,6 @@ const Loading = props => {
 }
 
 const GanttHeader = props => {
-    console.log(props.project)
     return (
         <div className="w-100">
             <div className="content__header--space">

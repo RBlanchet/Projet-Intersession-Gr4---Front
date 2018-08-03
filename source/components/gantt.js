@@ -111,6 +111,7 @@ export default class Gantt extends Component {
                 changed.start_at = formatDate(changed.start_date.toString())
                 changed.end_at = formatDate(changed.end_date.toString())
                 //Rework later
+                delete changed.users
                 delete changed.text
                 delete changed.active
                 delete changed.progress
@@ -183,11 +184,11 @@ export default class Gantt extends Component {
                     users += "<span>" + user.firstname+ " " + user.lastname + "</span>"
                 })
             }
-            if(task.details){
-                task.details = "<span id='title1'>Users: </span>"+ users +
-                    "<span id='title2'>Progress :</span>" + task.progress*100 + " %" +
-                    "<span id='title3'> Cost :</span>" + task.cost + " €"
-            }
+
+            task.details = "<span id='users'>Users: </span>"+ users+
+                "<span id='progress'> Progress :</span>" + task.progress*100 + " %" +
+                "<span id='cost'> Cost :</span>" + task.cost + " €"
+
             return true
         })
     }
@@ -205,7 +206,7 @@ export default class Gantt extends Component {
             {name:"time_spend", height:30, map_to:"time_spend", type:"textarea"},
             {name:"time",        height:60, map_to:{start_date:"start_at",end_date:"end_at"}, type:"time"},
             {name:"parent", type:"parent", allow_root:"true", root_label:"Pas de parent"},
-            {name:"users", map_to:"users", type:"checkbox", options:gantt.serverList("users")},
+            // {name:"users", map_to:"users", type:"checkbox", options:gantt.serverList("users")},
             {name:"status",  height: 22, map_to:"status", type:"select", options: [
                 {key: 1, label:"A faire"},
                 {key: 2, label: "En cours"},
@@ -218,7 +219,7 @@ export default class Gantt extends Component {
         gantt.locale.labels.section_time = "Durée"
         gantt.locale.labels.section_parent = "Tache parente"
         gantt.locale.labels.section_status = "Statut"
-        gantt.locale.labels.section_users = "Ajouter a la tache"
+        // gantt.locale.labels.section_users = "Ajouter a la tache"
         gantt.locale.labels.section_cost = "Coût de la tache"
         gantt.locale.labels.section_time_spend = "Temps passé"
     }
